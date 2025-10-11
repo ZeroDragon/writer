@@ -3,11 +3,34 @@
     <title>My App</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="app.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet">
   </head>
   <body>
     <div class="app">
-      <div class="header">Writer_</div>
-      <div class="sidebar">Sidebar content</div>
+      <div class="sidebar">
+        <ul>
+          <li>
+            <div class="item">
+              <span class="material-symbols-outlined">draft</span>
+              <span class="label">New</span>
+            </div>
+          </li>
+          <li>
+            <div class="item">
+              <span class="material-symbols-outlined">folder</span>
+              <span class="label">Open</span>
+            </div>
+          </li>
+          <li>
+            <div class="item">
+              <span class="material-symbols-outlined">save</span>
+              <span class="label">Save</span>
+            </div>
+          </li>
+        </ul>
+      </div>
       <div class="content" contentEditable="true">Main content area</div>
       <div class="footer">Footer information</div>
     </div>

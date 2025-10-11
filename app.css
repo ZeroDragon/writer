@@ -3,22 +3,22 @@
   --background: #10151d;
   --foreground: #ffffff;
   --app-background: #171f2b;
+  --hover-background: rgba(0, 0, 0, 0.2);
 }
 body {
   margin: 0;
   padding: 0;
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-family: "Roboto Mono", monospace;
   font-size: 16px;
 }
 .app {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 250px 1fr;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   grid-template-areas:
-    "header header"
     "sidebar content"
     "footer footer";
   gap: 16px;
@@ -45,6 +45,25 @@ body {
   min-height: 0;
   overflow: auto;
 }
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar .item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+.sidebar .item:hover {
+  background-color: var(--hover-background);
+  cursor: pointer;
+}
+.sidebar .item .label {
+  margin-left: 8px;
+}
 
 /* main content area */
 .content {
@@ -67,21 +86,6 @@ body {
   justify-content: center;
 }
 
-/* small utility styles */
-.header-title {
-  font-weight: 600;
-  font-size: 1.05rem;
-}
-
-.nav-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-list li {
-  margin: 8px 0;
-}
 
 /* responsive: stack on small screens */
 @media (max-width: 768px) {
