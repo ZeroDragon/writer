@@ -1,3 +1,4 @@
 !.gitignore
-index.html
-app.css
+*.html
+*.css
+*.js
