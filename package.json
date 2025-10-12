@@ -3,19 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
-  "author": "",
+  "author": "ZeroDragon",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "builder.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node builer.mjs"
   },
   "devDependencies": {
-    "pug": "^3.0.3",
-    "stylus": "^0.64.0",
+    "chokidar": "^4.0.3",
+    "consolecolors": "^0.33.2-b",
     "livereload": "^0.10.3",
-    "nodemon": "^3.1.10"
-  },
-  "nodemonConfig": {
-    "ext": "mjs,pug,styl"
+    "node-http-server": "^8.1.6",
+    "pug": "^3.0.3",
+    "stylus": "^0.64.0"
   }
 }

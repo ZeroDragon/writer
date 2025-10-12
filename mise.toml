@@ -2,18 +2,15 @@
 build_dir = "build"
 source_dir = "src"
 SESSION_NAME = "builder"
-NODE_ENV = "development"
+NODE_ENV = "development_"
 AppName = "Writer_"
 Author = "Zero"
 
 [tasks.build]
-run = "nodemon builder.mjs"
+run = "node builder.mjs"
 
 [tasks.server]
 run = "python3 -m http.server --directory build 8001"
-
-[tasks.livereload]
-run = "livereload build"
 
 [tasks.stop]
 run = "tmux kill-session -t $SESSION_NAME"
@@ -31,13 +28,9 @@ else
     echo "Creating new session '$SESSION_NAME' and running commands."
     tmux new-session -d -s "$SESSION_NAME"
     tmux split-window -v -t "$SESSION_NAME"
-    tmux split-window -v -t "$SESSION_NAME.0"
-    tmux split-window -h -t "$SESSION_NAME.0"
     tmux send-keys -t "$SESSION_NAME.0" "mise run build" ENTER
-    tmux send-keys -t "$SESSION_NAME.1" "mise run server" ENTER
-    tmux send-keys -t "$SESSION_NAME.2" "mise run livereload" ENTER
-    tmux send-keys -t "$SESSION_NAME.3" "jj" ENTER
-    tmux select-pane -t "$SESSION_NAME.3"
+    tmux send-keys -t "$SESSION_NAME.1" "jj" ENTER
+    tmux select-pane -t "$SESSION_NAME.1"
     tmux attach-session -t "$SESSION_NAME"
 fi
 """
