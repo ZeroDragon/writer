@@ -1,42 +1,36 @@
+
 <html>
   <head>
-    <title>My App</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="app.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet">
+    <meta charset="UTF-8"/>
+    <title>Writer App</title>
+    <link rel="stylesheet" href="app.css"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&amp;display=swap&amp;family=Material+Symbols+Outlined" rel="stylesheet"/>
   </head>
   <body>
     <div class="app">
       <div class="sidebar">
         <ul>
           <li>
-            <div class="item">
-              <span class="material-symbols-outlined">draft</span>
-              <span class="label">New</span>
-            </div>
+            <div class="item"><span class="material-symbols-outlined">draft</span><span class="label">New</span></div>
           </li>
           <li>
-            <div class="item">
-              <span class="material-symbols-outlined">folder</span>
-              <span class="label">Open</span>
-            </div>
+            <div class="item"><span class="material-symbols-outlined">folder</span><span class="label">Open</span></div>
           </li>
           <li>
-            <div class="item">
-              <span class="material-symbols-outlined">save</span>
-              <span class="label">Save</span>
-            </div>
+            <div class="item"><span class="material-symbols-outlined">save</span><span class="label">Save</span></div>
           </li>
         </ul>
       </div>
       <div class="content" contentEditable="true">Main content area</div>
       <div class="footer">Footer information</div>
     </div>
-    <script>document.write('<script src="http://'
+    <script>
+      document.write('<script src="http://'
         + (location.host || 'localhost').split(':')[0]
         + ':35729/livereload.js?snipver=1"></'
-        + 'script>')</script>
+        + 'script>')
+    </script>
   </body>
 </html>

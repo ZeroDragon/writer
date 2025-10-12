@@ -1,0 +1,3 @@
+{
+  "live-reload.excludes": ".DS_Store,.gitignore,.jj,.git,.svn,.hg,.pug,.styl"
+}
