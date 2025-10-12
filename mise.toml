@@ -1,5 +1,5 @@
 [env]
-build_dir = "build"
+build_dir = "public"
 source_dir = "src"
 SESSION_NAME = "builder"
 AppName = "Writer_"
