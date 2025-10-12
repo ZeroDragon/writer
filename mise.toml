@@ -6,6 +6,18 @@ NODE_ENV = "development"
 AppName = "Writer_"
 Author = "Zero"
 
+[tasks.builder]
+run = "nodemon builder.mjs"
+
+[tasks.server]
+run = "python3 -m http.server --directory build 8001"
+
+[tasks.livereload]
+run = "livereload build"
+
+[tasks.stop]
+run = "tmux kill-session -t $SESSION_NAME"
+
 [tasks.build]
 run = """
 #!/bin/bash
@@ -28,12 +40,3 @@ else
     tmux attach-session -t "$SESSION_NAME"
 fi
 """
-
-[tasks.builder]
-run = "nodemon builder.mjs"
-
-[tasks.server]
-run = "python3 -m http.server --directory build 8001"
-
-[tasks.livereload]
-run = "livereload build"
