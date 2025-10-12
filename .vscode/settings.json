@@ -1,4 +1,0 @@
-{
-  "live-reload.excludes": ".DS_Store,.gitignore,.jj,.git,.svn,.hg,.pug,.styl",
-  "live-reload.delayForUpdate": 1000
-}

@@ -11,7 +11,9 @@
   },
   "devDependencies": {
     "pug": "^3.0.3",
-    "stylus": "^0.64.0"
+    "stylus": "^0.64.0",
+    "livereload": "^0.10.3",
+    "nodemon": "^3.1.10"
   },
   "nodemonConfig": {
     "ext": "mjs,pug,styl"

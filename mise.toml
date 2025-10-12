@@ -7,7 +7,6 @@ SESSION_NAME = "builder"
 run = """
 #!/bin/bash
 
-# Check if the session already exists
 tmux has-session -t "$SESSION_NAME" 2>/dev/null
 
 if [ $? -eq 0 ]; then
@@ -15,25 +14,14 @@ if [ $? -eq 0 ]; then
     tmux attach-session -t "$SESSION_NAME"
 else
     echo "Creating new session '$SESSION_NAME' and running commands."
-    # Create a new detached tmux session
     tmux new-session -d -s "$SESSION_NAME"
-
-    # Split the window vertically
     tmux split-window -v -t "$SESSION_NAME"
-
-    # Split the window horizontally
+    tmux split-window -v -t "$SESSION_NAME.0"
     tmux split-window -h -t "$SESSION_NAME.0"
-
-    # Send the first command to the first pane (index 0)
     tmux send-keys -t "$SESSION_NAME.0" "mise run builder" ENTER
-
-    # Send the second command to the second pane (index 1)
     tmux send-keys -t "$SESSION_NAME.1" "mise run server" ENTER
-
-    # Send the third command to the third pane (index 2)
-    tmux send-keys -t "$SESSION_NAME.2" "jj" ENTER
-
-    # Attach to the session
+    tmux send-keys -t "$SESSION_NAME.2" "mise run livereload" ENTER
+    tmux send-keys -t "$SESSION_NAME.3" "jj" ENTER
     tmux attach-session -t "$SESSION_NAME"
 fi
 """
@@ -43,3 +31,6 @@ run = "nodemon builder.mjs"
 
 [tasks.server]
 run = "python3 -m http.server --directory build 8001"
+
+[tasks.livereload]
+run = "livereload build"
