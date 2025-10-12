@@ -2,7 +2,6 @@
 build_dir = "build"
 source_dir = "src"
 SESSION_NAME = "builder"
-NODE_ENV = "development_"
 AppName = "Writer_"
 Author = "Zero"
 
