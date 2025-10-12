@@ -6,7 +6,7 @@ NODE_ENV = "development"
 AppName = "Writer_"
 Author = "Zero"
 
-[tasks.builder]
+[tasks.build]
 run = "nodemon builder.mjs"
 
 [tasks.server]
@@ -18,7 +18,7 @@ run = "livereload build"
 [tasks.stop]
 run = "tmux kill-session -t $SESSION_NAME"
 
-[tasks.build]
+[tasks.dev]
 run = """
 #!/bin/bash
 
@@ -33,10 +33,11 @@ else
     tmux split-window -v -t "$SESSION_NAME"
     tmux split-window -v -t "$SESSION_NAME.0"
     tmux split-window -h -t "$SESSION_NAME.0"
-    tmux send-keys -t "$SESSION_NAME.0" "mise run builder" ENTER
+    tmux send-keys -t "$SESSION_NAME.0" "mise run build" ENTER
     tmux send-keys -t "$SESSION_NAME.1" "mise run server" ENTER
     tmux send-keys -t "$SESSION_NAME.2" "mise run livereload" ENTER
     tmux send-keys -t "$SESSION_NAME.3" "jj" ENTER
+    tmux select-pane -t "$SESSION_NAME.3"
     tmux attach-session -t "$SESSION_NAME"
 fi
 """
