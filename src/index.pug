@@ -10,11 +10,13 @@ html
     .app
       .sidebar
         ul
+          li: .item
+            span.material-symbols-outlined arrow_back_ios_new
+            span.label Writer
           for label, icon in menuItems
-            li
-              .item
-                span.material-symbols-outlined=icon
-                span.label=label
+            li: .item
+              span.material-symbols-outlined=icon
+              span.label=label
       .content(contentEditable="true")
       .footer Footer information
     script.
