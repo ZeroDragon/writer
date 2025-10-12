@@ -1,3 +1,45 @@
 [env]
 build_dir = "build"
 source_dir = "src"
+SESSION_NAME = "builder"
+
+[tasks.build]
+run = """
+#!/bin/bash
+
+# Check if the session already exists
+tmux has-session -t "$SESSION_NAME" 2>/dev/null
+
+if [ $? -eq 0 ]; then
+    echo "Session '$SESSION_NAME' already exists. Attaching to it."
+    tmux attach-session -t "$SESSION_NAME"
+else
+    echo "Creating new session '$SESSION_NAME' and running commands."
+    # Create a new detached tmux session
+    tmux new-session -d -s "$SESSION_NAME"
+
+    # Split the window vertically
+    tmux split-window -v -t "$SESSION_NAME"
+
+    # Split the window horizontally
+    tmux split-window -h -t "$SESSION_NAME.0"
+
+    # Send the first command to the first pane (index 0)
+    tmux send-keys -t "$SESSION_NAME.0" "mise run builder" ENTER
+
+    # Send the second command to the second pane (index 1)
+    tmux send-keys -t "$SESSION_NAME.1" "mise run server" ENTER
+
+    # Send the third command to the third pane (index 2)
+    tmux send-keys -t "$SESSION_NAME.2" "jj" ENTER
+
+    # Attach to the session
+    tmux attach-session -t "$SESSION_NAME"
+fi
+"""
+
+[tasks.builder]
+run = "nodemon builder.mjs"
+
+[tasks.server]
+run = "python3 -m http.server --directory build 8001"
