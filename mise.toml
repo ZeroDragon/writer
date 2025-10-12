@@ -2,6 +2,9 @@
 build_dir = "build"
 source_dir = "src"
 SESSION_NAME = "builder"
+NODE_ENV = "development"
+AppName = "Writer_"
+Author = "Zero"
 
 [tasks.build]
 run = """

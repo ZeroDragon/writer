@@ -3,7 +3,7 @@
   --background: #10151d
   --foreground: #ffffff
   --app-background: #171f2b
-  --hover-background: rgba(0, 0, 0, 0.2)
+  --hover-background: rgba(0, 0, 0, 0.3)
 
 body
   margin: 0
@@ -19,11 +19,11 @@ body
   grid-template-rows: 1fr auto
   grid-template-areas:\
     "sidebar content"\
-    "footer footer"
+    "sidebar footer"
   gap: 16px
   padding: 16px
 
-.header, .sidebar, .content, .footer
+.header, .content, .footer
   background-color: var(--app-background)
 
 /* regions */
@@ -38,7 +38,7 @@ body
 .sidebar
   font-weight: 300
   grid-area: sidebar
-  padding: 16px
+  padding: 4px
   border-radius: 8px
   min-height: 0
   overflow: auto
@@ -51,7 +51,7 @@ body
   .item
     display: flex
     align-items: center
-    padding: 8px
+    padding: 10px 8px
     border-radius: 4px
     transition: background-color 0.3s ease
 

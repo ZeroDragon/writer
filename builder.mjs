@@ -30,7 +30,7 @@ const sources = [
   })
   .forEach(({ type, files }) => {
     if (type === 'pug') {
-      const html = pug.renderFile(files[0], { pretty: true, menuItems })
+      const html = pug.renderFile(files[0], { pretty: false, menuItems })
       fs.writeFileSync(files[1], html)
     }
     if (type === 'stylus') {
