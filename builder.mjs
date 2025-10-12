@@ -10,6 +10,12 @@ const __dirname = dirname(__filename)
 
 const directories = [process.env.source_dir, process.env.build_dir]
 
+const menuItems = {
+  draft: 'New',
+  folder: 'Open',
+  save: 'Save'
+}
+
 const sources = [
   { type: 'pug', files: ['index.pug', 'index.html'] },
   { type: 'stylus', files: ['app.styl', 'app.css'] }
@@ -24,7 +30,7 @@ const sources = [
   })
   .forEach(({ type, files }) => {
     if (type === 'pug') {
-      const html = pug.renderFile(files[0], { pretty: true })
+      const html = pug.renderFile(files[0], { pretty: true, menuItems })
       fs.writeFileSync(files[1], html)
     }
     if (type === 'stylus') {
