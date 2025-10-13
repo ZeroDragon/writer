@@ -31,6 +31,10 @@ class App {
 const setCursor = (element, position) => {
   const newRange = document.createRange()
   const sel = window.getSelection()
+  newRange.setStart(element, position)
+  newRange.collapse(true)
+  sel.removeAllRanges()
+  sel.addRange(newRange)
 }
 
 const app = new App('app', {
@@ -48,7 +52,7 @@ const app = new App('app', {
     },
     updateContent: (e) => {
       // catch control shift 1 to 3 for h1 to h3
-      if (e.ctrlKey && e.altKey) {
+      if (e.altKey) {
         // get current div
         const selection = window.getSelection()
         if (!selection.rangeCount) return
@@ -61,20 +65,22 @@ const app = new App('app', {
         if (!currentNode || currentNode === e.target) return
         // save current cursor position
         const cursorPosition = range.startOffset
-        // wrap in h1 to h2 and regular div
-        let newTag = null
-        if (e.key === '1') newTag = 'H1'
-        else if (e.key === '2') newTag = 'H2'
-        else if (e.key === '3') newTag = 'DIV'
-        if (newTag) {
-          const newElement = document.createElement(newTag)
+        let newElement = null
+        if ([1, 2, 3].includes(~~e.key)) {
+          // wrap in h1 to h2 and regular div
+          let newTag = [, 'H1', 'H2', 'DIV'][e.key]
+          if (!newTag) return
+          newElement = document.createElement(newTag)
           newElement.textContent = currentNode.textContent
           currentNode.parentNode.replaceChild(newElement, currentNode)
           // set cursor to saved position
-          newRange.setStart(newElement, Math.min(cursorPosition, newElement.firstChild.length))
-          newRange.collapse(true)
-          sel.removeAllRanges()
-          sel.addRange(newRange)
+          setCursor(newElement?.firstChild || currentNode, cursorPosition)
+        }
+        if ([4, 5, 6, 7].includes(~~e.key)) {
+          currentNode.classList.toggle('align-left', e.key === '4')
+          currentNode.classList.toggle('align-center', e.key === '5')
+          currentNode.classList.toggle('align-right', e.key === '6')
+          currentNode.classList.toggle('align-justify', e.key === '7')
         }
       }
       // if firstchild is plain text node, wrap it in a div
@@ -83,12 +89,7 @@ const app = new App('app', {
         div.textContent = e.target.firstChild.textContent
         e.target.replaceChild(div, e.target.firstChild)
         //set cursor to end of div
-        const range = document.createRange()
-        const sel = window.getSelection()
-        range.setStart(div, 1)
-        range.collapse(true)
-        sel.removeAllRanges()
-        sel.addRange(range)
+        setCursor(div, 1)
       }
     }
   }

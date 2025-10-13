@@ -8,11 +8,6 @@ html
     link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
   body
     .app#app
-      .content(
-          contentEditable="true"
-          z:keyUp="updateContent"
-          z-model="content"
-        )
       .sidebar
         -
           const menuItems = {
@@ -25,7 +20,7 @@ html
             li: .item(z:click=`${icon}`)
               span.icon.material-symbols-outlined=icon
               span.label=label
-      //- .content(
+      .content(
           contentEditable="true"
           z:keyUp="updateContent"
           z-model="content"
