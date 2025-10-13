@@ -7,24 +7,36 @@ html
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
   body
-    .app
+    .app#app
+      .content(
+          contentEditable="true"
+          z:keyUp="updateContent"
+          z-model="content"
+        )
       .sidebar
-        - const menuItems = { draft: 'New', save: 'Save' }
+        -
+          const menuItems = {
+            fullscreen: 'Full screen',
+            draft: 'New',
+            save: 'Save'
+          }
         ul
-          li: .item
-            span.material-symbols-outlined arrow_back_ios_new
-            span.label=process.env.AppName
           for label, icon in menuItems
-            li: .item
-              span.material-symbols-outlined=icon
+            li: .item(z:click=`${icon}`)
+              span.icon.material-symbols-outlined=icon
               span.label=label
-      .content(contentEditable="true")
+      //- .content(
+          contentEditable="true"
+          z:keyUp="updateContent"
+          z-model="content"
+        )
       .footer
         =process.env.AppName
         |&nbsp;Copyright © 
         =new Date().getFullYear()
         |&nbsp;- Made with ❤️ by&nbsp;
         =process.env.Author
+    script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
         document.write('<script src="http://'

@@ -3,7 +3,9 @@
   --background: #10151d
   --foreground: #ffffff
   --app-background: #171f2b
-  --hover-background: rgba(0, 0, 0, 0.3)
+  --darker-background: rgba(0, 0, 0, 0.3)
+  --lighter-background: rgba(255, 255, 255, 0.1)
+  --accent: #a87ffb
 
 body
   margin: 0
@@ -15,16 +17,17 @@ body
 .app
   min-height: 100vh
   display: grid
-  grid-template-columns: 200px 1fr
+  grid-template-columns: 50px 1fr
   grid-template-rows: 1fr auto
   grid-template-areas:\
     "sidebar content"\
-    "sidebar footer"
-  gap: 16px
-  padding: 16px
+    "footer footer"
+  gap: 0
+  padding: 0
 
 .header, .content, .footer
   background-color: var(--app-background)
+  border-radius: 0
 
 /* regions */
 .header
@@ -33,54 +36,66 @@ body
   align-items: center
   justify-content: space-between
   padding: 12px 16px
-  border-radius: 8px
 
 .sidebar
   font-weight: 300
   grid-area: sidebar
   padding: 4px
-  border-radius: 8px
   min-height: 0
-  overflow: auto
+  overflow: hidden
+  position: fixed
 
   ul
     list-style: none
     padding: 0
     margin: 0
-
+  li
+    width: 42px
+    position: relative
   .item
     display: flex
     align-items: center
     padding: 10px 8px
     border-radius: 4px
-    transition: background-color 0.3s ease
+    z-index: 10
 
-    &:hover
-      background-color: var(--hover-background)
+    .icon:hover
       cursor: pointer
-    & span
+      & + .label
+        opacity: 0.6
+    span
       opacity: 0.6
-    & .label
+    .label
+      position: fixed
+      left: 34px
+      width: 110px
+      pointer-events: none
       margin-left: 8px
+      opacity: 0
+      transition: opacity 0.2s ease-in-out
 
 /* main content area */
 .content
   grid-area: content
-  padding: 20px
-  border-radius: 8px
+  padding: 50px 100px
   min-height: 0
   overflow: auto
   outline: none
-  font-size: 1rem
+  .align-left
+    text-align: justify
+  .align-center
+    text-align: center
+  .align-right
+    text-align: right
 
 /* footer */
 .footer
   grid-area: footer
-  padding: 12px 16px
-  border-radius: 8px
   display: flex
   align-items: center
   justify-content: center
+  padding: 4px 0
+  border-top: 1px solid var(--lighter-background)
 
 /* responsive: stack on small screens */
 // @media (max-width: 768px)
