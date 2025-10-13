@@ -1,8 +1,11 @@
-class App {
+class Zero {
   constructor(element, options = {}) {
     this.element = document.getElementById(element)
     this.methods = options.methods || {}
+    this.data = options.data || {}
+    this.reactiveElements = [...this.element.querySelectorAll('[z-model]')]
     this.bindEvents()
+    this.updateDom()
   }
   bindEvents() {
     this.triggers = [...this.element.querySelectorAll('*')]
@@ -26,6 +29,17 @@ class App {
       })
     })
   }
+  updateDom() {
+    this.reactiveElements.forEach(el => {
+      const model = el.getAttribute('z-model')
+      if (model && this.data[model] !== undefined) {
+        // if el is not an input, textarea or select, set innerHTML
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
+          return el.innerHTML = this.data[model]
+        el.value = this.data[model]
+      }
+    })
+  }
 }
 
 const setCursor = (element, position) => {
@@ -37,7 +51,10 @@ const setCursor = (element, position) => {
   sel.addRange(newRange)
 }
 
-const app = new App('app', {
+const app = new Zero('app', {
+  data: {
+    wordCount: 0
+  },
   methods: {
     fullscreen: () => {
       if (!document.fullscreenElement)
@@ -45,7 +62,8 @@ const app = new App('app', {
       document.exitFullscreen()
     },
     draft: () => {
-      console.log('draft')
+      app.data.content = ''
+      app.updateDom()
     },
     save: () => {
       console.log('save')

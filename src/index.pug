@@ -26,11 +26,8 @@ html
           z-model="content"
         )
       .footer
-        =process.env.AppName
-        |&nbsp;Copyright © 
-        =new Date().getFullYear()
-        |&nbsp;- Made with ❤️ by&nbsp;
-        =process.env.Author
+        span(z-model="wordCount")
+        span &nbsp;Words
     script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
