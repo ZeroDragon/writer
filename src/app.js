@@ -3,36 +3,91 @@ class Zero {
     this.element = document.getElementById(element)
     this.methods = options.methods || {}
     this.data = options.data || {}
-    this.reactiveElements = [...this.element.querySelectorAll('[z-model]')]
+    this.getInvolvedElements()
+    this.setTrackedDisplayItems()
     this.bindEvents()
     this.updateDom()
   }
-  bindEvents() {
-    this.triggers = [...this.element.querySelectorAll('*')]
+  getInvolvedElements() {
+    const allElements = [...this.element.querySelectorAll('*')]
+    this.reactiveElements = allElements
+      .filter(el => {
+        return [...el.attributes].some(attr => attr.name.startsWith('z-'))
+      })
+    this.triggers = allElements
       .filter(el => {
         return [...el.attributes].some(attr => attr.name.startsWith('z:'))
       })
+  }
+  bindEvents() {
     this.triggers.forEach(el => {
       [...el.attributes].forEach(attr => {
         if (attr.name.startsWith('z:')) {
           const [, eventType] = attr.name.split(':')
           const methodName = attr.value
-          if (!this.methods[methodName]) return
-          // only bind if is not already bound
-          if (!el._eventListeners) el._eventListeners = {}
-          if (!el._eventListeners[eventType]) el._eventListeners[eventType] = []
-          if (!el._eventListeners[eventType].includes(this.methods[methodName])) {
-            el.addEventListener(eventType, this.methods[methodName])
-            el._eventListeners[eventType].push(this.methods[methodName])
+          const parsedMethod = this.getValue(methodName) || methodName
+          if (!this.methods[parsedMethod]) return
+          // delete event listener and add again
+          // get all event listeners of this type on this element and remove them
+          el._listeners = el._listeners || {}
+          for (let evt in el._listeners) {
+            if (evt === eventType) {
+              el.removeEventListener(evt, el._listeners[evt])
+            }
           }
+          el._listeners[eventType] = this.methods[parsedMethod]
+          el.addEventListener(eventType, this.methods[parsedMethod])
         }
       })
     })
   }
-  updateDom() {
+  getValue(key) {
+    if (key.includes('.')) {
+      const keys = key.split('.')
+      let value = this.data
+      for (let k of keys) {
+        value = value?.[k]
+      }
+      return value
+    }
+    return this.data[key]
+  }
+  setTrackedDisplayItems() {
+    // look for all elements inside this.element that include text like {{key}}
+    // and replace it with the value of this.data[key]
+    this.trackedDisplays = {}
+    const textNodes = []
+    const walk = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null, false)
+    let node
+    while (node = walk.nextNode()) textNodes.push(node)
+    textNodes.forEach(textNode => {
+      const regex = /{{\s*([\w.]+)\s*}}/g
+      let match
+      // let newText = textNode.nodeValue
+      while (match = regex.exec(textNode.nodeValue)) {
+        const key = match[1]
+        this.trackedDisplays[key] = textNode
+      }
+    })
+  }
+  updateDom(updateOnly = []) {
+    // update all tracked display items
+    Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
+      const value = this.getValue(key)
+      if (value !== undefined) {
+        textNode.nodeValue = value
+      }
+    })
     this.reactiveElements.forEach(el => {
       const model = el.getAttribute('z-model')
+      const show = el.getAttribute('z-if')
+      if (show) {
+        // if data[show] is truthy, display the element, else hide it
+        const value = this.getValue(show)
+        el.style.display = value ? '' : 'none'
+      }
       if (model && this.data[model] !== undefined) {
+        if (updateOnly.length && !updateOnly.includes(model)) return
         // if el is not an input, textarea or select, set innerHTML
         if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
           return el.innerHTML = this.data[model]
@@ -53,16 +108,36 @@ const setCursor = (element, position) => {
 
 const app = new Zero('app', {
   data: {
-    wordCount: 0
+    wordCount: 0,
+    content: ''
   },
   methods: {
+    newDraft: () => {
+      app.data.content = ''
+      app.data.wordCount = 0
+      app.methods.closeModal()
+      app.updateDom()
+    },
+    closeModal: () => {
+      app.data.modal.visible = false
+      app.updateDom()
+    },
     fullscreen: () => {
       if (!document.fullscreenElement)
         return document.documentElement.requestFullscreen()
       document.exitFullscreen()
     },
     draft: () => {
-      app.data.content = ''
+      app.data.modal = {
+        visible: true,
+        title: 'New Draft',
+        message: 'Start a new draft? All changes will be lost.',
+        buttons: {
+          primary: { text: 'Cancel', action: 'closeModal' },
+          warning: { text: 'New Draft', action: 'newDraft' }
+        }
+      }
+      app.bindEvents()
       app.updateDom()
     },
     save: () => {
@@ -109,6 +184,9 @@ const app = new Zero('app', {
         //set cursor to end of div
         setCursor(div, 1)
       }
+      app.data.content = e.target.innerHTML
+      app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
+      app.updateDom(['wordCount'])
     }
   }
 })

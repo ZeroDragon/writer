@@ -1,11 +1,26 @@
+$darkPalette = {
+  background: #10151d
+  foreground: #ffffff
+  appBackground: #171f2b
+  darkerBackground: rgba(0, 0, 0, 0.3)
+  lighterBackground: rgba(255, 255, 255, 0.1)
+  accent: #a87ffb
+  secondary: #353535
+  warning: #ff4c4c
+}
+
 *
   box-sizing: border-box
-  --background: #10151d
-  --foreground: #ffffff
-  --app-background: #171f2b
-  --darker-background: rgba(0, 0, 0, 0.3)
-  --lighter-background: rgba(255, 255, 255, 0.1)
-  --accent: #a87ffb
+
+body.dark
+  --background: $darkPalette.background
+  --foreground: $darkPalette.foreground
+  --app-background: $darkPalette.appBackground
+  --darker-background: $darkPalette.darkerBackground
+  --lighter-background: $darkPalette.lighterBackground
+  --accent: $darkPalette.accent
+  --secondary: $darkPalette.secondary
+  --warning: $darkPalette.warning
 
 body
   margin: 0
@@ -103,6 +118,56 @@ body
   font-size: 0.8em
   span
     opacity: 0.4
+
+.modal
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-color: rgba(0, 0, 0, 0.5)
+  display: flex
+  align-items: center
+  justify-content: center
+  z-index: 1000
+
+  &.active
+    display: flex
+
+  .modal-content
+    min-width: 50%
+    background-color: var(--app-background)
+    padding: 20px
+    border-radius: 8px
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2)
+    max-width: 90%
+    max-height: 90%
+    overflow: auto
+  .title
+    font-size: 1.5em
+    color: var(--accent)
+    font-weight: 800
+  .buttons
+    display: flex
+    justify-content: space-between
+    margin-top: 20px
+    button
+      color: var(--foreground)
+      border: none
+      padding: 10px 20px
+      border-radius: 4px
+      cursor: pointer
+      font-size: 1em
+      opacity: 0.5
+      transition: opacity 0.2s ease-in-out
+      &:hover
+        opacity: 1
+      &.primary
+        background-color: var(--accent)
+      &.secondary
+        background-color: var(--secondary)
+      &.warning
+        background-color: var(--warning)
 
 /* responsive: stack on small screens */
 // @media (max-width: 768px)

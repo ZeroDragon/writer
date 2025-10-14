@@ -6,8 +6,8 @@ html
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
-  body
-    .app#app
+  body#app.dark
+    .app
       .sidebar
         -
           const menuItems = {
@@ -26,8 +26,20 @@ html
           z-model="content"
         )
       .footer
-        span(z-model="wordCount")
-        span &nbsp;Words
+        span {{ wordCount }}
+        span &nbsp;words
+    .modal(z-if="modal.visible")
+      .modal-content
+        .title {{ modal.title }}
+        p {{ modal.message }}
+        .buttons
+          for button in ['secondary', 'warning', 'primary']
+            button(
+              class=button
+              z:click=`modal.buttons.${button}.action`
+              z-if=`modal.buttons.${button}`
+            ) {{ modal.buttons.#{button}.text }}
+
     script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
