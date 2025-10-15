@@ -1,6 +1,5 @@
 import 'consolecolors'
 import chokidar from 'chokidar'
-import httpServer from 'node-http-server'
 import livereload from 'livereload'
 import pug from "pug"
 import stylus from "stylus"
@@ -8,6 +7,7 @@ import fs from "fs"
 import path from "path"
 import { fileURLToPath } from "url"
 import { dirname } from "path"
+import HTTPServer from './dev-server.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -78,7 +78,7 @@ if (process.env.NODE_ENV !== 'development') {
 
 const server = livereload.createServer()
 server.watch(path.join(__dirname, directories[1]))
-httpServer.deploy({ port: 8001, root: directories[1] })
+HTTPServer.deploy({ port: 8001, root: directories[1] })
 console.log('Livereload running at'.green, 'http://localhost:35729'.magenta)
 console.log('Server running at'.green, 'http://localhost:8001'.magenta)
 console.log('Watching for changes...'.yellow)

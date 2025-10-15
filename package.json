@@ -13,7 +13,6 @@
     "chokidar": "^4.0.3",
     "consolecolors": "^0.33.2-b",
     "livereload": "^0.10.3",
-    "node-http-server": "^8.1.6",
     "pug": "^3.0.3",
     "stylus": "^0.64.0"
   }
