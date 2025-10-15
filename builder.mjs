@@ -57,6 +57,16 @@ const copyJS = file => {
   fs.copyFileSync(files[0], files[1])
 }
 
+const copyAssets = () => {
+  console.log(' - Copying assets...'.magenta)
+  const source = path.join(__dirname, 'assets')
+  const dest = path.join(__dirname, directories[1], 'assets')
+  if (!fs.existsSync(dest)) fs.mkdirSync(dest)
+  fs.readdirSync(source).forEach(file => {
+    fs.copyFileSync(path.join(source, file), path.join(dest, file))
+  })
+}
+
 // Only build once if not in development mode
 if (process.env.NODE_ENV !== 'development') {
   fs.readdirSync(path.join(__dirname, directories[0]))
@@ -72,6 +82,7 @@ httpServer.deploy({ port: 8001, root: directories[1] })
 console.log('Livereload running at'.green, 'http://localhost:35729'.magenta)
 console.log('Server running at'.green, 'http://localhost:8001'.magenta)
 console.log('Watching for changes...'.yellow)
+copyAssets()
 
 const watcher = chokidar.watch(directories[0], {
   ignored: /(^|[\/\\])\../
