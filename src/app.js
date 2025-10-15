@@ -42,7 +42,15 @@ const app = new Zero('app', {
       app.updateDom()
     },
     save: () => {
-      console.log('save')
+      const blob = new Blob([app.data.content], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'draft.html'
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
     },
     updateContent: (e) => {
       // catch control shift 1 to 3 for h1 to h3
