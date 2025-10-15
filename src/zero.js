@@ -7,6 +7,7 @@ class Zero {
     this.setTrackedDisplayItems()
     this.bindEvents()
     this.updateDom()
+    if (options.preload) options.preload(this)
   }
   getInvolvedElements() {
     const allElements = [...this.element.querySelectorAll('*')]

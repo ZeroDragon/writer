@@ -6,11 +6,70 @@ const setCursor = (element, position) => {
   sel.removeAllRanges()
   sel.addRange(newRange)
 }
-
+const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 const app = new Zero('app', {
   data: {
     wordCount: 0,
-    content: ''
+    content: '',
+    sfx: 'no_sound',
+    soundOn: false
+  },
+  preload: async (instance) => {
+    async function loadSound(url) {
+      const response = await fetch(url)
+      const arrayBuffer = await response.arrayBuffer()
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+      return audioBuffer
+    }
+
+    // preload all mp3 from assets/sounds
+    const keys = Array.from({ length: 9 }, (_, i) => `0${i + 1}`.slice(-2))
+    const sounds = {
+      keys: keys.map(num => `key-${num}`),
+      special: [
+        'backspace',
+        'return',
+        'return-2',
+        'space-2',
+        'space'
+      ]
+    },
+    allSounds = [...sounds.keys, ...sounds.special]
+    instance.data.soundsMap = sounds
+    instance.data.sounds = await Promise.all(allSounds.map(async sound => {
+      const audio = await loadSound(`assets/${sound}.mp3`)
+      return { name: sound, audio }
+    }))
+    instance.soundName = e => {
+      const getSound = _ => {
+        if (e.key === ' ') return 'space-2'
+        if (e.key === 'Enter') return 'return'
+        if (e.key === 'Load') return 'return-2'
+        if (e.key === 'Backspace') return 'backspace'
+        if (/^[a-zA-Z0-9]$/.test(e.key)) {
+          const index = e.key.toLowerCase().charCodeAt(0) - 97
+          if (index >= 0 && index < 26) {
+            const soundIndex = index % instance.data.soundsMap.keys.length
+            return instance.data.soundsMap.keys[soundIndex]
+          }
+          if (/^[0-9]$/.test(e.key)) {
+            const num = parseInt(e.key, 10)
+            const soundIndex = (num - 1) % instance.data.soundsMap.keys.length
+            return instance.data.soundsMap.keys[soundIndex]
+          }
+        }
+        return 'space'
+      }
+      if (getSound()) {
+        const sound = instance.data.sounds.find(s => s.name === getSound())
+        if (sound) {
+          const source = audioContext.createBufferSource()
+          source.buffer = sound.audio
+          source.connect(audioContext.destination)
+          source.start(0)
+        }
+      }
+    }
   },
   methods: {
     newDraft: () => {
@@ -18,6 +77,14 @@ const app = new Zero('app', {
       app.data.wordCount = 0
       app.methods.closeModal()
       app.updateDom()
+    },
+    '{{sfx}}': () => {
+      app.data.soundOn = !app.data.soundOn
+      app.data.sfx = app.data.soundOn ? 'brand_awareness' : 'no_sound'
+      app.updateDom(['soundOn', '{{sfx}}'])
+      if (app.data.soundOn) {
+        const sound = app.soundName({ key: 'Load' })
+      }
     },
     closeModal: () => {
       app.data.modal.visible = false
@@ -84,6 +151,7 @@ const app = new Zero('app', {
           currentNode.classList.toggle('align-right', e.key === '6')
           currentNode.classList.toggle('align-justify', e.key === '7')
         }
+        return
       }
       // if firstchild is plain text node, wrap it in a div
       if (e.target.firstChild && e.target.firstChild.nodeType === Node.TEXT_NODE) {
@@ -93,6 +161,8 @@ const app = new Zero('app', {
         //set cursor to end of div
         setCursor(div, 1)
       }
+      // use a sound from soundsMap based on key pressed
+      app.data.soundOn ? app.soundName(e) : null
       app.data.content = e.target.innerHTML
       app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
       app.updateDom(['wordCount'])
