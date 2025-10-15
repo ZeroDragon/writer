@@ -11,7 +11,12 @@ const opts = { port: 8000, host: 'localhost', root: '/' }
 function onrequest(req, res) {
   let url = req.url
   if (url === '/') url = '/index.html'
-  const filePath = path.join(__dirname, opts.root, url)
+  let filePath = path.join(__dirname, opts.root, url)
+  // strip query params
+  const queryIndex = filePath.indexOf('?')
+  if (queryIndex !== -1) {
+    filePath = filePath.slice(0, queryIndex)
+  }
   fs.readFile(filePath, (err, data) => {
     if (err) {
       res.writeHead(404, { 'Content-Type': 'text/plain' })
