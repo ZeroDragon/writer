@@ -1,34 +1,39 @@
-$darkPalette = {
-  background: #10151d
-  foreground: #ffffff
-  appBackground: #171f2b
-  darkerBackground: rgba(0, 0, 0, 0.3)
-  lighterBackground: rgba(255, 255, 255, 0.1)
-  accent: #a87ffb
-  secondary: #353535
-  warning: #ff4c4c
-}
-
 *
   box-sizing: border-box
-
-body.dark
-  --background: $darkPalette.background
-  --foreground: $darkPalette.foreground
-  --app-background: $darkPalette.appBackground
-  --darker-background: $darkPalette.darkerBackground
-  --lighter-background: $darkPalette.lighterBackground
-  --accent: $darkPalette.accent
-  --secondary: $darkPalette.secondary
-  --warning: $darkPalette.warning
 
 body
   margin: 0
   padding: 0
-  background-color: var(--app-background)
-  color: var(--foreground)
+
+.theme.light
+  --background: #fdf6e3
+  --foreground: #1f2939
+  --app-background: #fdf6e3
+  --darker-background: #0000000F
+  --lighter-background: #0000001F
+  --accent: #a87ffb
+  --secondary: #545454
+  --warning: #ff6b6b
+  --buttonForeground: #ffffff
+
+.theme.dark
+  --background: #10151d
+  --foreground: #ffffff
+  --app-background: #171f2b
+  --darker-background: rgba(0, 0, 0, 0.3)
+  --lighter-background: rgba(255, 255, 255, 0.1)
+  --accent: #a87ffb
+  --secondary: #353535
+  --warning: #ff4c4c
+  --buttonForeground: #ffffff
+
+.theme
   font-family: "Roboto Mono", monospace
   font-size: 16px
+  background-color: var(--app-background)
+  color: var(--foreground)
+  transition: background-color 0.3s ease, color 0.3s ease
+
 .app
   min-height: 100vh
   display: grid
@@ -160,13 +165,14 @@ body
     font-size: 1.5em
     color: var(--accent)
     font-weight: 800
+    margin-bottom: 10px
   .buttons
     display: flex
     justify-content: space-between
     flex-direction: row-reverse
     margin-top: 20px
     button
-      color: var(--foreground)
+      color: var(--buttonForeground)
       border: none
       padding: 10px 20px
       border-radius: 4px

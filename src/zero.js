@@ -83,6 +83,7 @@ class Zero {
     this.reactiveElements.forEach(el => {
       const model = el.getAttribute('z-model')
       const show = el.getAttribute('z-if')
+      const klass = el.getAttribute('z-class')
       if (show) {
         // if data[show] is truthy, display the element, else hide it
         const value = this.getValue(show)
@@ -94,6 +95,17 @@ class Zero {
         if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
           return el.innerHTML = this.data[model]
         el.value = this.data[model]
+      }
+      if (klass) {
+        const regex = /{{\s*(!?)([\w.]+)\s*}}/g
+        const classes = klass
+          .split(' ')
+          .map(c => c.trim())
+          .map(c => {
+            const [,, key] = regex.exec(c) || []
+            return key ? this.getValue(key) : c
+          })
+        el.className = classes.join(' ')
       }
     })
   }

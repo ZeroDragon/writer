@@ -7,7 +7,7 @@ html
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
     script(src="zero.js")
-  body#app.dark
+  body#app: div(z-class="theme {{themeName}}")
     .app
       .sidebar
         -
@@ -16,6 +16,7 @@ html
             ['draft', 'New'],
             ['save', 'Save'],
             ['{{sfx}}', 'Toggle sound'],
+            ['{{theme}}', 'Toggle theme'],
             ['spacer'],
             ['help', 'Help']
           ]
@@ -39,7 +40,7 @@ html
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}
-        p {{ !modal.message }}
+        div {{ !modal.message }}
         .buttons
           for button in ['primary', 'secondary', 'warning']
             button(
@@ -47,7 +48,6 @@ html
               z:click=`modal.buttons.${button}.action`
               z-if=`modal.buttons.${button}`
             ) {{ modal.buttons.#{button}.text }}
-
     script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
