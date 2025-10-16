@@ -62,11 +62,12 @@ class Zero {
     let node
     while (node = walk.nextNode()) textNodes.push(node)
     textNodes.forEach(node => {
-      // console.log(node.textContent)
-      const regex = /{{\s*([\w.]+)\s*}}/g
+      // regex to match {{ key }} with optional spaces and optional bang at start
+      const regex = /{{\s*(!?)([\w.]+)\s*}}/g
       let match
       while (match = regex.exec(node.textContent)) {
-        const key = match[1]
+        const key = match[2]
+        node.isWildcard = !!match[1]
         this.trackedDisplays[key] = node
       }
     })
@@ -76,7 +77,7 @@ class Zero {
     Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
       const value = this.getValue(key)
       if (value !== undefined) {
-        textNode.innerHTML = value
+        textNode[textNode.isWildcard ? 'innerHTML' : 'textContent'] = value
       }
     })
     this.reactiveElements.forEach(el => {

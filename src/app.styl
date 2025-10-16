@@ -32,10 +32,10 @@ body
 .app
   min-height: 100vh
   display: grid
-  grid-template-columns: 50px 1fr
+  grid-template-columns: 1fr 50px
   grid-template-rows: 1fr auto
   grid-template-areas:\
-    "sidebar content"\
+    "content sidebar"\
     "footer footer"
   gap: 0
   padding: 0
@@ -59,6 +59,7 @@ body
   min-height: 0
   overflow: hidden
   position: fixed
+  right: 0
 
   ul
     list-style: none
@@ -83,7 +84,8 @@ body
     .label
       font-size: 0.8em
       position: fixed
-      left: 34px
+      right: 60px
+      text-align: right
       width: 110px
       pointer-events: none
       margin-left: 8px
@@ -151,6 +153,7 @@ body
   .buttons
     display: flex
     justify-content: space-between
+    flex-direction: row-reverse
     margin-top: 20px
     button
       color: var(--foreground)

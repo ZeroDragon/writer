@@ -15,7 +15,8 @@ html
             fullscreen: 'Full screen',
             draft: 'New',
             save: 'Save',
-            '{{sfx}}': 'Toggle sound'
+            '{{sfx}}': 'Toggle sound',
+            help: 'Help'
           }
         ul
           for label, icon in menuItems
@@ -33,9 +34,9 @@ html
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}
-        p {{ modal.message }}
+        p {{ !modal.message }}
         .buttons
-          for button in ['secondary', 'warning', 'primary']
+          for button in ['primary', 'secondary', 'warning']
             button(
               class=button
               z:click=`modal.buttons.${button}.action`

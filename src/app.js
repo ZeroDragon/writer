@@ -119,8 +119,39 @@ const app = new Zero('app', {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     },
+    help: () => {
+      app.data.modal = {
+        visible: true,
+        title: 'Keyboard Shortcuts',
+        message: [
+          '<ul>',
+          '<li><strong>Alt + 0</strong>: Regular text</li>',
+          '<li><strong>Alt + 1</strong>: Heading 1</li>',
+          '<li><strong>Alt + 2</strong>: Heading 2</li>',
+          '<li><strong>Alt + 3</strong>: Align Left</li>',
+          '<li><strong>Alt + 4</strong>: Align Center</li>',
+          '<li><strong>Alt + 5</strong>: Align Right</li>',
+          '<li><strong>Alt + 6</strong>: Justify</li>',
+          '<li>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
+          '</ul>',
+        ].join(''),
+        buttons: {
+          primary: { text: 'Close', action: 'closeModal' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+    },
     updateContent: (e) => {
-      // catch control shift 1 to 3 for h1 to h3
+      // catch alt + s for save
+      if ((e.altKey) && e.key.toLowerCase() === 's') {
+        return app.methods.save()
+      }
+      // catch alt + n for new draft (case-insensitive)
+      if ((e.altKey) && e.key && e.key.toLowerCase() === 'n') {
+        return app.methods.draft()
+      }
+      // catch alt 1 to 3 for h1 to h3
       if (e.altKey) {
         // get current div
         const selection = window.getSelection()
@@ -137,7 +168,7 @@ const app = new Zero('app', {
         let newElement = null
         if ([1, 2, 3].includes(~~e.key)) {
           // wrap in h1 to h2 and regular div
-          let newTag = [, 'H1', 'H2', 'DIV'][e.key]
+          let newTag = ['DIV', 'H1', 'H2'][e.key]
           if (!newTag) return
           newElement = document.createElement(newTag)
           newElement.textContent = currentNode.textContent
@@ -145,11 +176,11 @@ const app = new Zero('app', {
           // set cursor to saved position
           setCursor(newElement?.firstChild || currentNode, cursorPosition)
         }
-        if ([4, 5, 6, 7].includes(~~e.key)) {
-          currentNode.classList.toggle('align-left', e.key === '4')
-          currentNode.classList.toggle('align-center', e.key === '5')
-          currentNode.classList.toggle('align-right', e.key === '6')
-          currentNode.classList.toggle('align-justify', e.key === '7')
+        if ([3, 4, 5, 6].includes(~~e.key)) {
+          currentNode.classList.toggle('align-left', e.key === '3')
+          currentNode.classList.toggle('align-center', e.key === '4')
+          currentNode.classList.toggle('align-right', e.key === '5')
+          currentNode.classList.toggle('align-justify', e.key === '6')
         }
         return
       }
