@@ -69,6 +69,13 @@ const copyAssets = () => {
 
 // Only build once if not in development mode
 if (process.env.NODE_ENV !== 'development') {
+  console.log('Building project...'.green)
+  console.log(process.env.build_dir)
+  console.log(process.env.source_dir)
+  console.log(process.env.AppName)
+  console.log(process.env.Author)
+  console.log(path.join(__dirname, directories[0]))
+  console.log(path.join(__dirname, directories[1]))
   fs.readdirSync(path.join(__dirname, directories[0]))
     .filter(file => ['.styl', '.pug', '.js'].includes(path.extname(file)))
     .forEach(dispatcher)
