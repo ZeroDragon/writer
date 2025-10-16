@@ -82,15 +82,12 @@ const app = new Zero('app', {
     '{{theme}}': () => {
       app.data.themeName = app.data.themeName === 'dark' ? 'light' : 'dark'
       app.updateDom(['themeName'])
-      
     },
     '{{sfx}}': () => {
       app.data.soundOn = !app.data.soundOn
       app.data.sfx = app.data.soundOn ? 'brand_awareness' : 'no_sound'
       app.updateDom(['soundOn', '{{sfx}}'])
-      if (app.data.soundOn) {
-        const sound = app.soundName({ key: 'Load' })
-      }
+      if (app.data.soundOn) app.soundName({ key: 'Load' })
     },
     closeModal: () => {
       app.data.modal.visible = false
@@ -166,7 +163,13 @@ const app = new Zero('app', {
     },
     createSound: (e) => {
       // use a sound from soundsMap based on key pressed
-      app.data.soundOn ? app.soundName(e) : null
+      if (app.data.soundOn) {
+        if (!app.data.lastKeyTime) app.data.lastKeyTime = 0
+        if (app.data.lastKeyTime + 1000 > new Date().getTime() && app.data.lastKey === e.key) return
+        app.soundName(e)
+        app.data.lastKeyTime = new Date().getTime()
+        app.data.lastKey = e.key
+      }
     },
     updateContent: (e) => {
       // catch alt + s for save
@@ -192,7 +195,7 @@ const app = new Zero('app', {
         // save current cursor position
         const cursorPosition = range.startOffset
         let newElement = null
-        if ([1, 2, 3].includes(~~e.key)) {
+        if ([0, 1, 2].includes(~~e.key)) {
           // wrap in h1 to h2 and regular div
           let newTag = ['DIV', 'H1', 'H2'][e.key]
           if (!newTag) return
