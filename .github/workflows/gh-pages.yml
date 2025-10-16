@@ -6,12 +6,16 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
   build-and-deploy:
+    env:
+      build_dir: ./public
+      source_dir: ./src
+      AppName: Writer_
+      Author: Zero
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,23 +25,16 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '24'
 
       - name: Install dependencies
         run: npm install
 
       - name: Run builder
-        run: |
-          export build_dir="public"
-          export source_dir="src"
-          export AppName="Writer_"
-          export Author="Zero"
-          node ./builder.mjs
+        run: node ./builder.mjs
 
       - name: Deploy to docs branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: "public"
-          publish_branch: docs
-          commit_message: 'Deploy site to docs branch'
+          publish_dir: ./public
