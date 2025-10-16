@@ -7,7 +7,7 @@
   "type": "commonjs",
   "main": "builder.mjs",
   "scripts": {
-    "build": "node builer.mjs"
+    "build": "node ./builer.mjs"
   },
   "devDependencies": {
     "chokidar": "^4.0.3",
