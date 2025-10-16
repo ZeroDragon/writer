@@ -125,6 +125,8 @@ const app = new Zero('app', {
         title: 'Keyboard Shortcuts',
         message: [
           '<ul>',
+          '<li><strong>Alt + N</strong>: New Draft</li>',
+          '<li><strong>Alt + S</strong>: Save Draft</li>',
           '<li><strong>Alt + 0</strong>: Regular text</li>',
           '<li><strong>Alt + 1</strong>: Heading 1</li>',
           '<li><strong>Alt + 2</strong>: Heading 2</li>',
@@ -132,7 +134,7 @@ const app = new Zero('app', {
           '<li><strong>Alt + 4</strong>: Align Center</li>',
           '<li><strong>Alt + 5</strong>: Align Right</li>',
           '<li><strong>Alt + 6</strong>: Justify</li>',
-          '<li>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
+          '<li><br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
           '</ul>',
         ].join(''),
         buttons: {
@@ -141,6 +143,10 @@ const app = new Zero('app', {
       }
       app.bindEvents()
       app.updateDom()
+    },
+    createSound: (e) => {
+      // use a sound from soundsMap based on key pressed
+      app.data.soundOn ? app.soundName(e) : null
     },
     updateContent: (e) => {
       // catch alt + s for save
@@ -192,8 +198,6 @@ const app = new Zero('app', {
         //set cursor to end of div
         setCursor(div, 1)
       }
-      // use a sound from soundsMap based on key pressed
-      app.data.soundOn ? app.soundName(e) : null
       app.data.content = e.target.innerHTML
       app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
       app.updateDom(['wordCount'])

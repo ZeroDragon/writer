@@ -11,20 +11,25 @@ html
     .app
       .sidebar
         -
-          const menuItems = {
-            fullscreen: 'Full screen',
-            draft: 'New',
-            save: 'Save',
-            '{{sfx}}': 'Toggle sound',
-            help: 'Help'
-          }
+          const menuItems = [
+            ['fullscreen', 'Full screen'],
+            ['draft', 'New'],
+            ['save', 'Save'],
+            ['{{sfx}}', 'Toggle sound'],
+            ['spacer'],
+            ['help', 'Help']
+          ]
         ul
-          for label, icon in menuItems
-            li: .item(z:click=`${icon}`)
-              span.icon.material-symbols-outlined=icon
-              span.label=label
+          for item in menuItems
+            if item[0] === 'spacer'
+              li: .item
+            else
+              li: .item(z:click=`${item[0]}`)
+                span.icon.material-symbols-outlined=item[0]
+                span.label=item[1]
       .content(
           contentEditable="true"
+          z:keyDown="createSound"
           z:keyUp="updateContent"
           z-model="content"
         )
