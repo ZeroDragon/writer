@@ -1,6 +1,0 @@
-!.gitignore
-*.html
-*.css
-*.js
-!assets/
-assets/*
