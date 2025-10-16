@@ -25,7 +25,7 @@ body.dark
 body
   margin: 0
   padding: 0
-  background-color: var(--background)
+  background-color: var(--app-background)
   color: var(--foreground)
   font-family: "Roboto Mono", monospace
   font-size: 16px
@@ -40,18 +40,10 @@ body
   gap: 0
   padding: 0
 
-.header, .content, .footer
-  background-color: var(--app-background)
+.content, .footer, .sidebar
   border-radius: 0
 
 /* regions */
-.header
-  grid-area: header
-  display: flex
-  align-items: center
-  justify-content: space-between
-  padding: 12px 16px
-
 .sidebar
   font-weight: 300
   grid-area: sidebar
@@ -101,6 +93,17 @@ body
   outline: none
   caret-color: var(--accent)
   scroll-behavior: smooth
+  max-height: calc(90vh - 50px)
+  // make scrollbar thin and light
+  &::-webkit-scrollbar
+    width: 8px
+  &::-webkit-scrollbar-track
+    background: var(--darker-background)
+  &::-webkit-scrollbar-thumb
+    background: var(--lighter-background)
+    border-radius: 4px
+  &::-webkit-scrollbar-thumb:hover
+    background: var(--accent)
   .align-left
     text-align: left
   .align-center
@@ -181,18 +184,20 @@ body
         background-color: var(--warning)
 
 /* responsive: stack on small screens */
-// @media (max-width: 768px)
-//   .app
-//     grid-template-columns: 1fr
-//     grid-template-rows: auto 1fr auto auto
-//     grid-template-areas:
-//       "content"
-//       "sidebar"
-//       "footer"
-//     padding: 12px
+@media (max-width: 768px)
+  .app
+    grid-template-columns: 1fr
+    grid-template-rows: 50px 1fr auto
+    grid-template-areas:\
+      "sidebar"\
+      "content"\
+      "footer"
 
-//   .header
-//     height: auto
-
-//   .sidebar
-//     max-height: 40vh
+  .sidebar
+    position: fixed
+    ul
+      display: flex
+      flex-direction: row
+      li .item .label
+        left: 10px
+        text-align: left
