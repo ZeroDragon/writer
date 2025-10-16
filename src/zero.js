@@ -58,16 +58,16 @@ class Zero {
     // and replace it with the value of this.data[key]
     this.trackedDisplays = {}
     const textNodes = []
-    const walk = document.createTreeWalker(this.element, NodeFilter.SHOW_TEXT, null, false)
+    const walk = document.createTreeWalker(this.element, NodeFilter.SHOW_ELEMENT)
     let node
     while (node = walk.nextNode()) textNodes.push(node)
-    textNodes.forEach(textNode => {
+    textNodes.forEach(node => {
+      // console.log(node.textContent)
       const regex = /{{\s*([\w.]+)\s*}}/g
       let match
-      // let newText = textNode.nodeValue
-      while (match = regex.exec(textNode.nodeValue)) {
+      while (match = regex.exec(node.textContent)) {
         const key = match[1]
-        this.trackedDisplays[key] = textNode
+        this.trackedDisplays[key] = node
       }
     })
   }
@@ -76,7 +76,7 @@ class Zero {
     Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
       const value = this.getValue(key)
       if (value !== undefined) {
-        textNode.nodeValue = value
+        textNode.innerHTML = value
       }
     })
     this.reactiveElements.forEach(el => {
