@@ -28,22 +28,16 @@ jobs:
 
       - name: Run builder
         run: |
-          export build_dir="${{ secrets.BUILD_DIR }}"
-          export source_dir="${{ secrets.SOURCE_DIR }}"
-          export AppName="${{ secrets.APP_NAME }}"
-          export Author="${{ secrets.AUTHOR }}"
-
-          # Persist for subsequent steps
-          echo "BUILD_DIR=${build_dir}" >> $GITHUB_ENV
-          echo "SOURCE_DIR=${source_dir}" >> $GITHUB_ENV
-          echo "APP_NAME=${AppName}" >> $GITHUB_ENV
-          echo "AUTHOR=${Author}" >> $GITHUB_ENV
+          export build_dir="public"
+          export source_dir="src"
+          export AppName="Writer_"
+          export Author="Zero"
           node ./builder.mjs
 
       - name: Deploy to docs branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ${{ env.BUILD_DIR }}
+          publish_dir: "./public"
           publish_branch: docs
           commit_message: 'Deploy site to docs branch'
