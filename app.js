@@ -12,7 +12,9 @@ const app = new Zero('app', {
     wordCount: 0,
     content: '',
     sfx: 'no_sound',
-    soundOn: false
+    theme: 'dark_mode',
+    soundOn: false,
+    themeName: 'dark',
   },
   preload: async (instance) => {
     async function loadSound(url) {
@@ -21,7 +23,6 @@ const app = new Zero('app', {
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
       return audioBuffer
     }
-
     // preload all mp3 from assets/sounds
     const keys = Array.from({ length: 9 }, (_, i) => `0${i + 1}`.slice(-2))
     const sounds = {
@@ -77,6 +78,11 @@ const app = new Zero('app', {
       app.data.wordCount = 0
       app.methods.closeModal()
       app.updateDom()
+    },
+    '{{theme}}': () => {
+      app.data.themeName = app.data.themeName === 'dark' ? 'light' : 'dark'
+      app.updateDom(['themeName'])
+      
     },
     '{{sfx}}': () => {
       app.data.soundOn = !app.data.soundOn
@@ -137,6 +143,20 @@ const app = new Zero('app', {
           '<li><br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
           '</ul>',
         ].join(''),
+        buttons: {
+          primary: { text: 'Close', action: 'closeModal' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+    },
+    settings: () => {
+      app.settingsNode = document.getElementById('configHolder')
+      app.data.settingsVisible = true
+      app.data.modal = {
+        visible: true,
+        title: 'Settings',
+        message: app.settingsNode,
         buttons: {
           primary: { text: 'Close', action: 'closeModal' }
         }
