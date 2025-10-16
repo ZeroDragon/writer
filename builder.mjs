@@ -67,6 +67,9 @@ const copyAssets = () => {
   })
 }
 
+if (!fs.existsSync(path.join(__dirname, directories[1])))
+  fs.mkdirSync(path.join(__dirname, directories[1]))
+
 // Only build once if not in development mode
 if (process.env.NODE_ENV !== 'development') {
   console.log('Building project...'.green)
