@@ -27,7 +27,11 @@ jobs:
         run: npm install
 
       - name: Run builder
-        run: node ./builder.mjs
+        run: |
+          echo "${{ secrets.ENVS }}" > env.sh
+          chmod +x env.sh
+          ./env.sh
+          node ./builder.mjs
 
       - name: Deploy to docs branch
         uses: peaceiris/actions-gh-pages@v4
