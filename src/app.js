@@ -126,34 +126,7 @@ const app = new Zero('app', {
       app.data.modal = {
         visible: true,
         title: 'Keyboard Shortcuts',
-        message: [
-          '<ul>',
-          '<li><strong>Alt + N</strong>: New Draft</li>',
-          '<li><strong>Alt + S</strong>: Save Draft</li>',
-          '<li><strong>Alt + 0</strong>: Regular text</li>',
-          '<li><strong>Alt + 1</strong>: Heading 1</li>',
-          '<li><strong>Alt + 2</strong>: Heading 2</li>',
-          '<li><strong>Alt + 3</strong>: Align Left</li>',
-          '<li><strong>Alt + 4</strong>: Align Center</li>',
-          '<li><strong>Alt + 5</strong>: Align Right</li>',
-          '<li><strong>Alt + 6</strong>: Justify</li>',
-          '<li><br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
-          '</ul>'
-        ].join(''),
-        buttons: {
-          primary: { text: 'Close', action: 'closeModal' }
-        }
-      }
-      app.bindEvents()
-      app.updateDom()
-    },
-    settings: () => {
-      app.settingsNode = document.getElementById('configHolder')
-      app.data.settingsVisible = true
-      app.data.modal = {
-        visible: true,
-        title: 'Settings',
-        message: app.settingsNode,
+        message: document.getElementById('helpData').innerHTML,
         buttons: {
           primary: { text: 'Close', action: 'closeModal' }
         }

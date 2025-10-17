@@ -1,3 +1,25 @@
+-
+  const menuItems = [
+    ['fullscreen', 'Full screen'],
+    ['draft', 'New'],
+    ['save', 'Save'],
+    ['{{sfx}}', 'Toggle sound'],
+    ['{{theme}}', 'Toggle theme'],
+    ['spacer'],
+    ['help', 'Help']
+  ]
+-
+  const helpData = [
+    ['S', 'Save Draft'],
+    ['N', 'New Draft'],
+    [0,'Regular text'],
+    [1,'Heading 1'],
+    [2,'Heading 2'],
+    [3,'Align left'],
+    [4,'Align center'],
+    [5,'Align right'],
+    [6,'Justify'],
+  ]
 html
   head
     meta(charset="UTF-8")
@@ -10,16 +32,6 @@ html
   body#app: div(z-class="theme {{themeName}}")
     .app
       .sidebar
-        -
-          const menuItems = [
-            ['fullscreen', 'Full screen'],
-            ['draft', 'New'],
-            ['save', 'Save'],
-            ['{{sfx}}', 'Toggle sound'],
-            ['{{theme}}', 'Toggle theme'],
-            ['spacer'],
-            ['help', 'Help']
-          ]
         ul
           for item in menuItems
             if item[0] === 'spacer'
@@ -48,6 +60,14 @@ html
               z:click=`modal.buttons.${button}.action`
               z-if=`modal.buttons.${button}`
             ) {{ modal.buttons.#{button}.text }}
+    #helpData(z-if="false")
+      ul
+        for desc in helpData
+          li
+            strong Ctrl (cmd on mac) + #{desc[0]}
+            |: #{desc[1]}
+        li.
+          <br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.
     script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
