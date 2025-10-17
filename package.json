@@ -14,6 +14,7 @@
     "consolecolors": "^0.33.2-b",
     "livereload": "^0.10.3",
     "pug": "^3.0.3",
+    "standard": "^17.1.2",
     "stylus": "^0.64.0"
   }
 }

@@ -1,3 +1,4 @@
+/* global Zero Node */
 const setCursor = (element, position) => {
   const newRange = document.createRange()
   const sel = window.getSelection()
@@ -14,10 +15,10 @@ const app = new Zero('app', {
     sfx: 'no_sound',
     theme: 'dark_mode',
     soundOn: false,
-    themeName: 'dark',
+    themeName: 'dark'
   },
   preload: async (instance) => {
-    async function loadSound(url) {
+    async function loadSound (url) {
       const response = await fetch(url)
       const arrayBuffer = await response.arrayBuffer()
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
@@ -34,8 +35,8 @@ const app = new Zero('app', {
         'space-2',
         'space'
       ]
-    },
-    allSounds = [...sounds.keys, ...sounds.special]
+    }
+    const allSounds = [...sounds.keys, ...sounds.special]
     instance.data.soundsMap = sounds
     instance.data.sounds = await Promise.all(allSounds.map(async sound => {
       const audio = await loadSound(`assets/${sound}.mp3`)
@@ -94,8 +95,7 @@ const app = new Zero('app', {
       app.updateDom()
     },
     fullscreen: () => {
-      if (!document.fullscreenElement)
-        return document.documentElement.requestFullscreen()
+      if (!document.fullscreenElement) return document.documentElement.requestFullscreen()
       document.exitFullscreen()
     },
     draft: () => {
@@ -138,7 +138,7 @@ const app = new Zero('app', {
           '<li><strong>Alt + 5</strong>: Align Right</li>',
           '<li><strong>Alt + 6</strong>: Justify</li>',
           '<li><br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.</li>',
-          '</ul>',
+          '</ul>'
         ].join(''),
         buttons: {
           primary: { text: 'Close', action: 'closeModal' }
@@ -181,7 +181,7 @@ const app = new Zero('app', {
         return app.methods.draft()
       }
       // catch alt 1 to 3 for h1 to h3
-      if (e.altKey) {
+      if (e.altKey || e.ctrlKey) {
         // get current div
         const selection = window.getSelection()
         if (!selection.rangeCount) return
@@ -197,7 +197,7 @@ const app = new Zero('app', {
         let newElement = null
         if ([0, 1, 2].includes(~~e.key)) {
           // wrap in h1 to h2 and regular div
-          let newTag = ['DIV', 'H1', 'H2'][e.key]
+          const newTag = ['DIV', 'H1', 'H2'][e.key]
           if (!newTag) return
           newElement = document.createElement(newTag)
           newElement.textContent = currentNode.textContent
@@ -218,7 +218,7 @@ const app = new Zero('app', {
         const div = document.createElement('div')
         div.textContent = e.target.firstChild.textContent
         e.target.replaceChild(div, e.target.firstChild)
-        //set cursor to end of div
+        // set cursor to end of div
         setCursor(div, 1)
       }
       app.data.content = e.target.innerHTML

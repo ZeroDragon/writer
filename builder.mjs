@@ -1,12 +1,11 @@
 import 'consolecolors'
 import chokidar from 'chokidar'
 import livereload from 'livereload'
-import pug from "pug"
-import stylus from "stylus"
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "url"
-import { dirname } from "path"
+import pug from 'pug'
+import stylus from 'stylus'
+import fs from 'fs'
+import path, { dirname } from 'path'
+import { fileURLToPath } from 'url'
 import HTTPServer from './dev-server.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -67,8 +66,9 @@ const copyAssets = () => {
   })
 }
 
-if (!fs.existsSync(path.join(__dirname, directories[1])))
+if (!fs.existsSync(path.join(__dirname, directories[1]))) {
   fs.mkdirSync(path.join(__dirname, directories[1]))
+}
 
 // Only build once if not in development mode
 if (process.env.NODE_ENV !== 'development') {
@@ -95,7 +95,7 @@ console.log('Watching for changes...'.yellow)
 copyAssets()
 
 const watcher = chokidar.watch(directories[0], {
-  ignored: /(^|[\/\\])\../
+  ignored: /(^|[/\\])\../
 })
 
 watcher.on('add', dispatcher)

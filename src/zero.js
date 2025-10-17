@@ -1,5 +1,6 @@
-class Zero {
-  constructor(element, options = {}) {
+/* global NodeFilter */
+class Zero { // eslint-disable-line no-unused-vars
+  constructor (element, options = {}) {
     this.element = document.getElementById(element)
     this.methods = options.methods || {}
     this.data = options.data || {}
@@ -9,7 +10,8 @@ class Zero {
     this.updateDom()
     if (options.preload) options.preload(this)
   }
-  getInvolvedElements() {
+
+  getInvolvedElements () {
     const allElements = [...this.element.querySelectorAll('*')]
     this.reactiveElements = allElements
       .filter(el => {
@@ -20,7 +22,8 @@ class Zero {
         return [...el.attributes].some(attr => attr.name.startsWith('z:'))
       })
   }
-  bindEvents() {
+
+  bindEvents () {
     this.triggers.forEach(el => {
       [...el.attributes].forEach(attr => {
         if (attr.name.startsWith('z:')) {
@@ -31,7 +34,7 @@ class Zero {
           // delete event listener and add again
           // get all event listeners of this type on this element and remove them
           el._listeners = el._listeners || {}
-          for (let evt in el._listeners) {
+          for (const evt in el._listeners) {
             if (evt === eventType) {
               el.removeEventListener(evt, el._listeners[evt])
             }
@@ -42,37 +45,44 @@ class Zero {
       })
     })
   }
-  getValue(key) {
+
+  getValue (key) {
     if (key.includes('.')) {
       const keys = key.split('.')
       let value = this.data
-      for (let k of keys) {
+      for (const k of keys) {
         value = value?.[k]
       }
       return value
     }
     return this.data[key]
   }
-  setTrackedDisplayItems() {
+
+  setTrackedDisplayItems () {
     // look for all elements inside this.element that include text like {{key}}
     // and replace it with the value of this.data[key]
     this.trackedDisplays = {}
     const textNodes = []
     const walk = document.createTreeWalker(this.element, NodeFilter.SHOW_ELEMENT)
     let node
-    while (node = walk.nextNode()) textNodes.push(node)
+    while (walk.nextNode()) {
+      node = walk.currentNode
+      textNodes.push(node)
+    }
+    // while (node = walk.nextNode()) textNodes.push(node)
     textNodes.forEach(node => {
       // regex to match {{ key }} with optional spaces and optional bang at start
       const regex = /{{\s*(!?)([\w.]+)\s*}}/g
-      let match
-      while (match = regex.exec(node.textContent)) {
+      const match = regex.exec(node.textContent)
+      if (match) {
         const key = match[2]
         node.isWildcard = !!match[1]
         this.trackedDisplays[key] = node
       }
     })
   }
-  updateDom(updateOnly = []) {
+
+  updateDom (updateOnly = []) {
     // update all tracked display items
     Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
       const value = this.getValue(key)
@@ -92,8 +102,10 @@ class Zero {
       if (model && this.data[model] !== undefined) {
         if (updateOnly.length && !updateOnly.includes(model)) return
         // if el is not an input, textarea or select, set innerHTML
-        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
-          return el.innerHTML = this.data[model]
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) {
+          el.innerHTML = this.data[model]
+          return
+        }
         el.value = this.data[model]
       }
       if (klass) {
