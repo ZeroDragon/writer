@@ -4,6 +4,7 @@ import livereload from 'livereload'
 import pug from 'pug'
 import stylus from 'stylus'
 import fs from 'fs'
+import UglifyJS from 'uglify-js'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import HTTPServer from './dev-server.mjs'
@@ -48,12 +49,14 @@ const buildPug = file => {
 }
 
 const copyJS = file => {
-  console.log(' - Copying JavaScript...'.magenta)
+  console.log(' - Building JavaScript...'.magenta)
   const files = [
     path.join(__dirname, directories[0], `${file}.js`),
     path.join(__dirname, directories[1], `${file}.js`)
   ]
-  fs.copyFileSync(files[0], files[1])
+  const result = UglifyJS.minify(fs.readFileSync(files[0], 'utf8'))
+  if (result.error) throw result.error
+  fs.writeFileSync(files[1], result.code)
 }
 
 const copyAssets = () => {
