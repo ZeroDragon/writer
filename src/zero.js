@@ -92,12 +92,15 @@ class Zero { // eslint-disable-line no-unused-vars
     })
     this.reactiveElements.forEach(el => {
       const model = el.getAttribute('z-model')
-      const show = el.getAttribute('z-if')
+      let show = el.getAttribute('z-if')
       const klass = el.getAttribute('z-class')
       if (show) {
+        // check if show has bang at start
+        const isNegated = show.startsWith('!')
+        if (isNegated) show = show.slice(1)
         // if data[show] is truthy, display the element, else hide it
         const value = this.getValue(show)
-        el.style.display = value ? '' : 'none'
+        el.style.display = isNegated ? !value ? '' : 'none' : value ? '' : 'none'
       }
       if (model && this.data[model] !== undefined) {
         if (updateOnly.length && !updateOnly.includes(model)) return

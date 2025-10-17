@@ -41,14 +41,31 @@ html
                 span.icon.material-symbols-outlined=item[0]
                 span.label=item[1]
       .content(
-          contentEditable="true"
-          z:keyDown="createSound"
-          z:keyUp="updateContent"
-          z-model="content"
-        )
+        contentEditable="true"
+        z:keyDown="createSound"
+        z:keyUp="updateContent"
+        z-model="content"
+      )
       .footer
+        span words:&nbsp;
         span {{ wordCount }}
-        span &nbsp;words
+        span &nbsp;of&nbsp;
+        input.wordset(
+          z-model="goal"
+          placeholder="Goal"
+        )
+        span &nbsp;-&nbsp;
+        span(z:click="incrementTimeLeft")
+          .icon.material-symbols-outlined timer_arrow_up
+        input.timeset(
+          z-model="timeGoal"
+          placeholder="hh:mm:ss"
+          z:blur="setTimeGoal"
+          z:focus="startEditingTimeGoal"
+          z:tick="tickTimeGoal"
+        )
+        span(z-if="timerIsRunning" z:click="resetTimeGoal")
+          .icon.material-symbols-outlined close_small
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}

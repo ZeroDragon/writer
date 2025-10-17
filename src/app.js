@@ -15,7 +15,9 @@ const app = new Zero('app', {
     sfx: 'no_sound',
     theme: 'dark_mode',
     soundOn: false,
-    themeName: 'dark'
+    themeName: 'dark',
+    timerIsRunning: false,
+    writeTimer: 0
   },
   preload: async (instance) => {
     async function loadSound (url) {
@@ -72,6 +74,12 @@ const app = new Zero('app', {
         }
       }
     }
+    instance.timer = setInterval(() => {
+      // dispatch a 'tick' event only for elements that has z:tick attribute
+      instance.element.querySelectorAll('[z\\:tick]').forEach(el => {
+        el.dispatchEvent(new CustomEvent('tick'))
+      })
+    }, 1000)
   },
   methods: {
     newDraft: () => {
@@ -203,6 +211,74 @@ const app = new Zero('app', {
       app.data.content = e.target.innerHTML
       app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
       app.updateDom(['wordCount'])
+    },
+    transformTime: (seconds) => {
+      let [hh, mm, ss] = [0, 0, 0]
+      mm = Math.floor(seconds / 60)
+      ss = seconds % 60
+      if (mm >= 60) {
+        hh = Math.floor(mm / 60)
+        mm = mm % 60
+      }
+      return { hh, mm, ss }
+    },
+    incrementTimeLeft: _ => {
+      app.data.writeTimer += 30
+      app.data.timerIsRunning = true
+      app.methods.updateTimeGoal()
+    },
+    updateTimeGoal: _ => {
+      const { hh, mm, ss } = app.methods.transformTime(app.data.writeTimer)
+      const formattedTime = [hh, mm, ss]
+        .map(unit => `00${unit}`.slice(-2))
+        .join(':')
+      app.data.timeGoal = ''
+      if (formattedTime !== '00:00:00') app.data.timeGoal = formattedTime
+      app.updateDom(['timeGoal'])
+    },
+    startEditingTimeGoal: _ => {
+      app.data.timerIsRunning = false
+    },
+    setTimeGoal: (e) => {
+      app.data.timerIsRunning = true
+      const value = e.target.value
+      // value must be in format [[D]D:][[M]M:][[S]S]
+      const regex = /^((\d{1,2}):)?((\d{1,2}):)?(\d{1,2})$/
+      const match = regex.exec(value)
+      if (!match) {
+        app.data.writeTimer = 0
+        app.methods.updateTimeGoal()
+        return
+      }
+      let [hh, mm, ss] = [0, 0, 0]
+      const valueArr = value.split(':')
+      if (valueArr.length === 3) {
+        [hh, mm, ss] = valueArr.map(v => parseInt(v, 10) || 0)
+      } else if (valueArr.length === 2) {
+        [mm, ss] = valueArr.map(v => parseInt(v, 10) || 0)
+      } else {
+        ss = parseInt(value, 10) || 0
+      }
+      const totalSeconds = hh * 3600 + mm * 60 + ss
+      app.data.writeTimer = totalSeconds
+      app.methods.updateTimeGoal()
+    },
+    tickTimeGoal: (e) => {
+      if (app.data.timerIsRunning) {
+        app.data.writeTimer -= 1
+        app.methods.updateTimeGoal()
+        app.data.writeTimer = Math.max(0, app.data.writeTimer)
+        if (app.data.writeTimer === 0) {
+          app.data.timerIsRunning = false
+          app.updateDom(['timerIsRunning'])
+        }
+      }
+    },
+    resetTimeGoal: _ => {
+      app.data.writeTimer = 0
+      app.data.timerIsRunning = false
+      app.methods.updateTimeGoal()
+      app.updateDom(['timerIsRunning'])
     }
   }
 })

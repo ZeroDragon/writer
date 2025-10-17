@@ -38,7 +38,7 @@ body
   min-height: 100vh
   display: grid
   grid-template-columns: 1fr 50px
-  grid-template-rows: 1fr auto
+  grid-template-rows: 1fr 50px
   grid-template-areas:\
     "content sidebar"\
     "footer footer"
@@ -47,6 +47,12 @@ body
 
 .content, .footer, .sidebar
   border-radius: 0
+
+.icon
+  -webkit-user-select: none
+  -moz-user-select: none
+  -ms-user-select: none
+  user-select: none
 
 /* regions */
 .sidebar
@@ -65,10 +71,6 @@ body
   li
     width: 42px
     position: relative
-    -webkit-user-select: none
-    -moz-user-select: none
-    -ms-user-select: none
-    user-select: none
   .item
     display: flex
     align-items: center
@@ -83,7 +85,7 @@ body
     span
       opacity: 0.6
     .label
-      font-size: 0.8em
+      font-size: 14px
       position: fixed
       right: 60px
       text-align: right
@@ -133,9 +135,29 @@ body
   justify-content: center
   padding: 4px 0
   border-top: 1px solid var(--lighter-background)
-  font-size: 0.8em
+  font-size: 14px
+  .icon
+    cursor: pointer
   span
     opacity: 0.4
+  input
+    width: 50px
+    opacity: 0.4
+    &.timeset
+      width: 80px
+
+input
+  background-color: transparent
+  font-family: "Roboto Mono", monospace
+  border: none
+  color: var(--foreground)
+  padding: 4px 8px
+  border-radius: 4px
+  // width: 80px
+  text-align: center
+  &:focus
+    outline: none
+    box-shadow: 0 0 5px var(--accent)
 
 .modal
   position: fixed
@@ -148,6 +170,7 @@ body
   align-items: center
   justify-content: center
   z-index: 1000
+  font-size: 16px
 
   &.active
     display: flex
