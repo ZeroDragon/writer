@@ -20,6 +20,7 @@
     [5,'Align right'],
     [6,'Justify'],
   ]
+doctype html
 html
   head
     meta(charset="UTF-8")
@@ -53,6 +54,7 @@ html
         input.wordset(
           z-model="goal"
           placeholder="Goal"
+          name="wordGoal"
         )
         span &nbsp;-&nbsp;
         span(z:click="incrementTimeLeft")
@@ -63,6 +65,7 @@ html
           z:blur="setTimeGoal"
           z:focus="startEditingTimeGoal"
           z:tick="tickTimeGoal"
+          name="timeGoal"
         )
         span(z-if="timerIsRunning" z:click="resetTimeGoal")
           .icon.material-symbols-outlined close_small
