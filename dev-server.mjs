@@ -1,14 +1,14 @@
 import http from 'http'
 import fs from 'fs'
-import path from "path"
+import path from 'path'
 
-import { fileURLToPath } from "url"
+import { fileURLToPath } from 'url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const opts = { port: 8000, host: 'localhost', root: '/' }
 
-function onrequest(req, res) {
+function onrequest (req, res) {
   let url = req.url
   if (url === '/') url = '/index.html'
   let filePath = path.join(__dirname, opts.root, url)
