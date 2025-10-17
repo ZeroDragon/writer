@@ -82,11 +82,22 @@ const app = new Zero('app', {
     }, 1000)
     // get saved data from localStorage
     const savedData = window.localStorage.getItem('writerAppData')
+    const { soundOn, themeName } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
+    if (themeName) instance.data.themeName = themeName
+    if (soundOn !== undefined) instance.data.soundOn = soundOn
     if (savedData) instance.data.content = savedData
+    app.data.sfx = instance.data.soundOn ? 'brand_awareness' : 'no_sound'
+    app.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
     instance.data.wordCount = instance.data.content.split(/\s+/).filter(word => word.length > 0).length
     app.updateDom()
   },
   methods: {
+    saveSettings: () => {
+      window.localStorage.setItem('writerAppSettings', JSON.stringify({
+        soundOn: app.data.soundOn,
+        themeName: app.data.themeName
+      }))
+    },
     newDraft: () => {
       app.data.content = ''
       app.data.wordCount = 0
@@ -102,6 +113,7 @@ const app = new Zero('app', {
         app.data.theme = 'dark_mode'
         app.data.themeName = 'dark'
       }
+      app.methods.saveSettings()
       app.updateDom(['themeName'])
     },
     '{{sfx}}': () => {
@@ -109,6 +121,7 @@ const app = new Zero('app', {
       app.data.sfx = app.data.soundOn ? 'brand_awareness' : 'no_sound'
       app.updateDom(['soundOn', '{{sfx}}'])
       if (app.data.soundOn) app.soundName({ key: 'Load' })
+      app.methods.saveSettings()
     },
     closeModal: () => {
       app.data.modal.visible = false
