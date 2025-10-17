@@ -81,7 +81,13 @@ const app = new Zero('app', {
       app.updateDom()
     },
     '{{theme}}': () => {
-      app.data.themeName = app.data.themeName === 'dark' ? 'light' : 'dark'
+      if (app.data.themeName === 'dark') {
+        app.data.theme = 'light_mode'
+        app.data.themeName = 'light'
+      } else {
+        app.data.theme = 'dark_mode'
+        app.data.themeName = 'dark'
+      }
       app.updateDom(['themeName'])
     },
     '{{sfx}}': () => {
