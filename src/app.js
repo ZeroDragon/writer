@@ -80,11 +80,17 @@ const app = new Zero('app', {
         el.dispatchEvent(new CustomEvent('tick'))
       })
     }, 1000)
+    // get saved data from localStorage
+    const savedData = window.localStorage.getItem('writerAppData')
+    if (savedData) instance.data.content = savedData
+    instance.data.wordCount = instance.data.content.split(/\s+/).filter(word => word.length > 0).length
+    app.updateDom()
   },
   methods: {
     newDraft: () => {
       app.data.content = ''
       app.data.wordCount = 0
+      window.localStorage.setItem('writerAppData', app.data.content)
       app.methods.closeModal()
       app.updateDom()
     },
@@ -209,6 +215,7 @@ const app = new Zero('app', {
         setCursor(div, 1)
       }
       app.data.content = e.target.innerHTML
+      window.localStorage.setItem('writerAppData', app.data.content)
       app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
       app.updateDom(['wordCount'])
     },
