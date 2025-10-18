@@ -88,10 +88,20 @@ const app = new Zero('app', {
     if (savedData) instance.data.content = savedData
     app.data.sfx = instance.data.soundOn ? 'brand_awareness' : 'no_sound'
     app.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
-    instance.data.wordCount = instance.data.content.split(/\s+/).filter(word => word.length > 0).length
+    // get words from html content
+    instance.data.wordCount = instance.methods.countWords(app.data.content)
     app.updateDom()
   },
   methods: {
+    countWords: (rawHtml) => {
+      const tmp = document.createElement('div')
+      tmp.innerHTML = rawHtml
+      const textContent = tmp.innerHTML
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ').trim()
+      return textContent.split(' ').filter(word => word.length > 0).length
+    },
     saveSettings: () => {
       window.localStorage.setItem('writerAppSettings', JSON.stringify({
         soundOn: app.data.soundOn,
@@ -229,7 +239,7 @@ const app = new Zero('app', {
       }
       app.data.content = e.target.innerHTML
       window.localStorage.setItem('writerAppData', app.data.content)
-      app.data.wordCount = app.data.content.split(/\s+/).filter(word => word.length > 0).length
+      app.data.wordCount = app.methods.countWords(app.data.content)
       app.updateDom(['wordCount'])
     },
     transformTime: (seconds) => {
