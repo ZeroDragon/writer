@@ -1,13 +1,13 @@
 -
   const menuItems = [
     ['fullscreen', 'Full screen'],
-    ['draft', 'New'],
+    ['insert_drive_file', 'New'],
     ['save', 'Save'],
     ['{{sfx}}', 'Toggle sound'],
     ['{{theme}}', 'Toggle theme'],
     ['{{zenMode}}', 'Toggle Zen'],
     ['spacer'],
-    ['help', 'Help']
+    ['help_outlined', 'Help']
   ]
 -
   const helpData = [
@@ -29,7 +29,8 @@ html
     link(rel="stylesheet" href="app.css")
     link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
-    link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
+    //- link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap&family=Material+Symbols+Outlined" rel="stylesheet")
+    link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet")
     script(src="zero.js")
   body#app: div(z-class="theme {{themeName}}")
     .app
@@ -40,7 +41,7 @@ html
               li: .item
             else
               li: .item(z:click=`${item[0]}`)
-                span.icon.material-symbols-outlined=item[0]
+                span.icon.material-icons-outlined=item[0]
                 span.label=item[1]
       .content#content(
         contentEditable="true"
@@ -60,7 +61,7 @@ html
         )
         span &nbsp;-&nbsp;
         span(z:click="incrementTimeLeft")
-          .icon.material-symbols-outlined timer_arrow_up
+          .icon.material-icons-outlined more_time
         input.timeset(
           z-model="timeGoal"
           placeholder="hh:mm:ss"
@@ -70,7 +71,7 @@ html
           name="timeGoal"
         )
         span(z-if="timerIsRunning" z:click="resetTimeGoal")
-          .icon.material-symbols-outlined close_small
+          .icon.material-icons-outlined timer_off
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}

@@ -12,7 +12,7 @@ const app = new Zero('app', {
   data: {
     wordCount: 0,
     content: '',
-    sfx: 'no_sound',
+    sfx: 'music_off',
     soundOn: false,
     theme: 'dark_mode',
     themeName: 'dark',
@@ -88,7 +88,7 @@ const app = new Zero('app', {
     if (themeName) instance.data.themeName = themeName
     if (soundOn !== undefined) instance.data.soundOn = soundOn
     if (savedData) instance.data.content = savedData
-    app.data.sfx = instance.data.soundOn ? 'brand_awareness' : 'no_sound'
+    app.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
     app.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
     // get words from html content
     instance.data.wordCount = instance.methods.countWords(app.data.content)
@@ -130,7 +130,7 @@ const app = new Zero('app', {
     },
     '{{sfx}}': () => {
       app.data.soundOn = !app.data.soundOn
-      app.data.sfx = app.data.soundOn ? 'brand_awareness' : 'no_sound'
+      app.data.sfx = app.data.soundOn ? 'music_note' : 'music_off'
       app.updateDom(['soundOn', '{{sfx}}'])
       if (app.data.soundOn) app.soundName({ key: 'Load' })
       app.methods.saveSettings()
@@ -155,7 +155,7 @@ const app = new Zero('app', {
       if (!document.fullscreenElement) return document.documentElement.requestFullscreen()
       document.exitFullscreen()
     },
-    draft: () => {
+    insert_drive_file: () => {
       app.data.modal = {
         visible: true,
         title: 'New Draft',
@@ -179,7 +179,7 @@ const app = new Zero('app', {
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
     },
-    help: () => {
+    help_outlined: () => {
       app.data.modal = {
         visible: true,
         title: 'Keyboard Shortcuts',
@@ -195,7 +195,7 @@ const app = new Zero('app', {
       // use a sound from soundsMap based on key pressed
       if (app.data.soundOn) {
         if (!app.data.lastKeyTime) app.data.lastKeyTime = 0
-        if (app.data.lastKeyTime + 1000 > new Date().getTime() && app.data.lastKey === e.key) return
+        if (app.data.lastKeyTime + 500 > new Date().getTime() && app.data.lastKey === e.key) return
         app.soundName(e)
         app.data.lastKeyTime = new Date().getTime()
         app.data.lastKey = e.key
