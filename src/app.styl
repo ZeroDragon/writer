@@ -104,29 +104,16 @@ body
   outline: none
   caret-color: var(--accent)
   scroll-behavior: smooth
-  max-height: calc(50vh)
-  background-color: var(--background)
-  // make scrollbar thin and light
+  max-height: calc(70vh)
+  // disable scrollbars
   &::-webkit-scrollbar
-    width: 8px
-  &::-webkit-scrollbar-track
-    background: var(--darker-background)
-  &::-webkit-scrollbar-thumb
-    background: var(--lighter-background)
-    border-radius: 4px
-  &::-webkit-scrollbar-thumb:hover
-    background: var(--accent)
-  & ::selection
-    background: var(--accent)
-    color: var(--buttonForeground)
-  .align-left
-    text-align: left
-  .align-center
-    text-align: center
-  .align-right
-    text-align: right
-  .align-justify
-    text-align: justify
+    display: none
+  -ms-overflow-style: none
+  scrollbar-width: none
+  & > *
+    transition: opacity 0.3s ease-in-out
+  .dimmed
+    opacity: 0.2
 
 /* footer */
 .footer

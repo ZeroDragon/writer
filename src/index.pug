@@ -5,6 +5,7 @@
     ['save', 'Save'],
     ['{{sfx}}', 'Toggle sound'],
     ['{{theme}}', 'Toggle theme'],
+    ['{{zenMode}}', 'Toggle Zen'],
     ['spacer'],
     ['help', 'Help']
   ]
@@ -41,10 +42,11 @@ html
               li: .item(z:click=`${item[0]}`)
                 span.icon.material-symbols-outlined=item[0]
                 span.label=item[1]
-      .content(
+      .content#content(
         contentEditable="true"
         z:keyDown="createSound"
         z:keyUp="updateContent"
+        z:click="tryZenMode"
         z-model="content"
       )
       .footer

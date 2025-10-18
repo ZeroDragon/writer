@@ -13,9 +13,11 @@ const app = new Zero('app', {
     wordCount: 0,
     content: '',
     sfx: 'no_sound',
-    theme: 'dark_mode',
     soundOn: false,
+    theme: 'dark_mode',
     themeName: 'dark',
+    zenMode: 'self_improvement',
+    zenOn: false,
     timerIsRunning: false,
     writeTimer: 0
   },
@@ -133,6 +135,18 @@ const app = new Zero('app', {
       if (app.data.soundOn) app.soundName({ key: 'Load' })
       app.methods.saveSettings()
     },
+    '{{zenMode}}': () => {
+      app.data.zenOn = !app.data.zenOn
+      app.data.zenMode = app.data.zenOn ? 'local_pizza' : 'self_improvement'
+      app.updateDom(['zenOn', '{{zenMode}}'])
+      if (!app.data.zenOn) {
+        // remove dimmed class from all children
+        const contentEl = document.getElementById('content')
+        Array.from(contentEl.children).forEach(child => {
+          child.classList.remove('dimmed')
+        })
+      }
+    },
     closeModal: () => {
       app.data.modal.visible = false
       app.updateDom()
@@ -241,6 +255,30 @@ const app = new Zero('app', {
       window.localStorage.setItem('writerAppData', app.data.content)
       app.data.wordCount = app.methods.countWords(app.data.content)
       app.updateDom(['wordCount'])
+      app.methods.tryZenMode(e)
+    },
+    tryZenMode: (e) => {
+      if (!app.data.zenOn) return
+      const contentEl = document.getElementById('content')
+      // get current innerDiv where the cursor is
+      const selection = window.getSelection()
+      if (!selection.rangeCount) return
+      const range = selection.getRangeAt(0)
+      let currentNode = range.startContainer
+      while (currentNode && currentNode !== e.target) {
+        if (currentNode.nodeType === Node.ELEMENT_NODE && ['DIV', 'H1', 'H2'].includes(currentNode.tagName)) break
+        currentNode = currentNode.parentNode
+      }
+      if (!currentNode || currentNode === contentEl) return
+      // dim all other elements inside e.target
+      if (currentNode.innerText.trim() === '') return
+      Array.from(contentEl.children).forEach(child => {
+        if (child !== currentNode) {
+          child.classList.add('dimmed')
+        } else {
+          child.classList.remove('dimmed')
+        }
+      })
     },
     transformTime: (seconds) => {
       let [hh, mm, ss] = [0, 0, 0]
