@@ -19,7 +19,8 @@ const app = new Zero('app', {
     zenMode: 'self_improvement',
     zenOn: false,
     timerIsRunning: false,
-    writeTimer: 0
+    writeTimer: 0,
+    wordGoal: ''
   },
   preload: async (instance) => {
     async function loadSound (url) {
@@ -37,7 +38,9 @@ const app = new Zero('app', {
         'return',
         'return-2',
         'space-2',
-        'space'
+        'space',
+        'alert-long',
+        'alert-short'
       ]
     }
     const allSounds = [...sounds.keys, ...sounds.special]
@@ -48,10 +51,15 @@ const app = new Zero('app', {
     }))
     instance.soundName = e => {
       const getSound = _ => {
-        if (e.key === ' ') return 'space-2'
-        if (e.key === 'Enter') return 'return'
-        if (e.key === 'Load') return 'return-2'
-        if (e.key === 'Backspace') return 'backspace'
+        const specials = {
+          ' ': 'space-2',
+          Enter: 'return',
+          Load: 'return-2',
+          Backspace: 'backspace',
+          alert1: 'alert-short',
+          alert2: 'alert-long'
+        }
+        if (specials[e.key]) return specials[e.key]
         if (/^[a-zA-Z0-9]$/.test(e.key)) {
           const index = e.key.toLowerCase().charCodeAt(0) - 97
           if (index >= 0 && index < 26) {
@@ -262,6 +270,7 @@ const app = new Zero('app', {
       app.data.content = e.target.innerHTML
       window.localStorage.setItem('writerAppData', app.data.content)
       app.data.wordCount = app.methods.countWords(app.data.content)
+      console.log(app.data.wordCount, app.data.wordGoal)
       app.updateDom(['wordCount'])
       app.methods.tryZenMode(e)
     },
@@ -344,6 +353,9 @@ const app = new Zero('app', {
         app.data.writeTimer -= 1
         app.methods.updateTimeGoal()
         app.data.writeTimer = Math.max(0, app.data.writeTimer)
+        if (app.data.writeTimer === 5) {
+          app.soundName({ key: 'alert2' })
+        }
         if (app.data.writeTimer === 0) {
           app.data.timerIsRunning = false
           app.updateDom(['timerIsRunning'])
@@ -355,6 +367,16 @@ const app = new Zero('app', {
       app.data.timerIsRunning = false
       app.methods.updateTimeGoal()
       app.updateDom(['timerIsRunning'])
+    },
+    setWordGoal: (e) => {
+      const value = e.target.value
+      const num = parseInt(value, 10)
+      if (isNaN(num) || num < 0) {
+        app.data.wordGoal = ''
+        e.target.value = ''
+      } else {
+        app.data.wordGoal = num
+      }
     }
   }
 })

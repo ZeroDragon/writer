@@ -4,11 +4,12 @@ A simple write space without distractions or assistants
 
 ## To Do
 
-- Trigger alert when 5 seconds left for time limit  
 - Trigger alert for when 1 word left to goal  
+- Create icon
 - Create native app for desktop
 - Create native app for devices
 
+- ~~Trigger alert when 5 seconds left for time limit~~  
 - ~~Persist zen mode config~~
 - ~~Fullscreen~~  
 - ~~New draft~~  
