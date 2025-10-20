@@ -20,7 +20,8 @@ const app = new Zero('app', {
     zenOn: false,
     timerIsRunning: false,
     writeTimer: 0,
-    wordGoal: ''
+    wordGoal: '',
+    lastWordCount: 0
   },
   preload: async (instance) => {
     async function loadSound (url) {
@@ -270,7 +271,12 @@ const app = new Zero('app', {
       app.data.content = e.target.innerHTML
       window.localStorage.setItem('writerAppData', app.data.content)
       app.data.wordCount = app.methods.countWords(app.data.content)
-      console.log(app.data.wordCount, app.data.wordGoal)
+      if (app.data.wordCount !== app.data.lastWordCount) {
+        if (app.data.wordGoal && app.data.wordCount === app.data.wordGoal - 1) {
+          app.soundName({ key: 'alert1' })
+        }
+        app.data.lastWordCount = app.data.wordCount
+      }
       app.updateDom(['wordCount'])
       app.methods.tryZenMode(e)
     },
