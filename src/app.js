@@ -84,14 +84,20 @@ const app = new Zero('app', {
     }, 1000)
     // get saved data from localStorage
     const savedData = window.localStorage.getItem('writerAppData')
-    const { soundOn, themeName } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
+    const { soundOn, themeName, zenOn } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
     if (themeName) instance.data.themeName = themeName
     if (soundOn !== undefined) instance.data.soundOn = soundOn
+    if (zenOn !== undefined) instance.data.zenOn = zenOn
     if (savedData) instance.data.content = savedData
     app.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
     app.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
+    app.data.zenMode = instance.data.zenOn ? 'local_pizza' : 'self_improvement'
     // get words from html content
     instance.data.wordCount = instance.methods.countWords(app.data.content)
+    const contentEl = document.getElementById('content')
+    Array.from(contentEl.children).forEach(child => {
+      child.classList.remove('dimmed')
+    })
     app.updateDom()
   },
   methods: {
@@ -107,7 +113,8 @@ const app = new Zero('app', {
     saveSettings: () => {
       window.localStorage.setItem('writerAppSettings', JSON.stringify({
         soundOn: app.data.soundOn,
-        themeName: app.data.themeName
+        themeName: app.data.themeName,
+        zenOn: app.data.zenOn
       }))
     },
     newDraft: () => {
@@ -146,6 +153,7 @@ const app = new Zero('app', {
           child.classList.remove('dimmed')
         })
       }
+      app.methods.saveSettings()
     },
     closeModal: () => {
       app.data.modal.visible = false
