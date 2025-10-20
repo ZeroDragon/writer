@@ -58,6 +58,7 @@ html
           placeholder="Goal"
           name="wordGoal"
           z:blur="setWordGoal"
+          autoComplete="off"
         )
         span &nbsp;-&nbsp;
         span(z:click="incrementTimeLeft")
@@ -69,6 +70,7 @@ html
           z:focus="startEditingTimeGoal"
           z:tick="tickTimeGoal"
           name="timeGoal"
+          autoComplete="off"
         )
         span(z-if="timerIsRunning" z:click="resetTimeGoal")
           .icon.material-icons-outlined timer_off

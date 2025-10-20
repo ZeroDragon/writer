@@ -338,6 +338,7 @@ const app = new Zero('app', {
       const match = regex.exec(value)
       if (!match) {
         app.data.writeTimer = 0
+        app.data.timerIsRunning = false
         app.methods.updateTimeGoal()
         return
       }
