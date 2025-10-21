@@ -87,7 +87,16 @@ class Zero { // eslint-disable-line no-unused-vars
     Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
       const value = this.getValue(key)
       if (value !== undefined) {
-        textNode[textNode.isWildcard ? 'innerHTML' : 'textContent'] = value
+        if (textNode.isWildcard) {
+          if (typeof value !== 'string') {
+            textNode.innerHTML = ''
+            textNode.appendChild(value)
+          } else {
+            textNode.innerHTML = value
+          }
+          return
+        }
+        textNode.textContent = value
       }
     })
     this.reactiveElements.forEach(el => {

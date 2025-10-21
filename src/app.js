@@ -1,4 +1,4 @@
-/* global Zero Node FileReader */
+/* global Zero Node FileReader, encryptText, decryptText */
 const setCursor = (element, position) => {
   const newRange = document.createRange()
   const sel = window.getSelection()
@@ -185,8 +185,9 @@ const app = new Zero('app', {
       app.bindEvents()
       app.updateDom()
     },
-    save: () => {
-      const blob = new Blob([app.data.content], { type: 'text/html' })
+    save: async () => {
+      const encryptedText = await app.methods.encryptText()
+      const blob = new Blob([encryptedText], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -404,6 +405,56 @@ const app = new Zero('app', {
       } else {
         app.data.wordGoal = num
       }
+    },
+    lock: () => {
+      const encryptDiv = document.getElementById('encryptInputs').cloneNode(true)
+      app.data.modal = {
+        visible: true,
+        title: 'Encryption',
+        message: encryptDiv,
+        buttons: {
+          secondary: { text: 'Cancel', action: 'closeModal' },
+          primary: { text: 'Set Encryption', action: 'setLock' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+      const [encryptionKey, encryptionSecret] = ['encryptionKey', 'encryptionSecret']
+        .map(name => app.data.modal.message.querySelector(`.modal-content input[name="${name}"]`))
+      encryptionKey.value = app.data.encryption?.key || ''
+      encryptionSecret.value = app.data.encryption?.secret || ''
+    },
+    encryptText: async () => {
+      if (!app.data.encryption?.key || !app.data.encryption?.secret) return app.data.content
+      return encryptText(
+        app.data.content,
+        app.data.encryption.key,
+        app.data.encryption.secret
+      )
+    },
+    decryptText: () => {
+      const txt = app.data.content.replace(/<[^>]+>/g, '')
+      return decryptText(
+        txt,
+        app.data.encryption.key,
+        app.data.encryption.secret
+      )
+    },
+    setLock: async () => {
+      const [encryptionKey, encryptionSecret] = ['encryptionKey', 'encryptionSecret']
+        .map(name => app.data.modal.message.querySelector(`.modal-content input[name="${name}"]`))
+      const decryptOnCloseModal = app.data.modal.message.querySelector('.modal-content input[name="decryptOnCloseModal"]').checked
+      app.data.encryption = {
+        key: encryptionKey.value,
+        secret: encryptionSecret.value
+      }
+      if (decryptOnCloseModal) {
+        app.data.content = await app.methods.decryptText()
+        app.data.wordCount = app.methods.countWords(app.data.content)
+        window.localStorage.setItem('writerAppData', app.data.content)
+      }
+      app.methods.closeModal()
+      app.updateDom()
     }
   }
 })

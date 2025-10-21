@@ -8,7 +8,8 @@
     ['{{theme}}', 'Toggle theme'],
     ['{{zenMode}}', 'Toggle Zen'],
     ['spacer'],
-    ['help_outlined', 'Help']
+    ['lock', 'Encryption'],
+    ['help_outlined', 'Help'],
   ]
 -
   const helpData = [
@@ -36,6 +37,7 @@ html(lang="en" viewport="width=device-width, initial-scale=1.0 user-scalable=no"
     link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
     link(href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet")
     script(src="zero.js")
+    script(src="encrypter.js")
   body#app: div(z-class="theme {{themeName}}")
     .app
       .sidebar
@@ -82,7 +84,7 @@ html(lang="en" viewport="width=device-width, initial-scale=1.0 user-scalable=no"
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}
-        div {{ !modal.message }}
+        div.message {{ !modal.message }}
         .buttons
           for button in ['primary', 'secondary', 'warning']
             button(
@@ -98,6 +100,16 @@ html(lang="en" viewport="width=device-width, initial-scale=1.0 user-scalable=no"
             |: #{desc[1]}
         li.
           <br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.
+    #encrypt(z-if="false")
+      #encryptInputs
+        .txt If you set an encryption key and secret, your drafts will be encrypted in your browser before being saved to disk. You will need to provide the same key and secret to open your drafts again.
+        .encryptInputs
+          input(placeholder="Encryption Key" name="encryptionKey" autocomplete="off")
+          input(placeholder="Encryption Secret" name="encryptionSecret" autocomplete="off")
+          label
+            input(type="checkbox" name="decryptOnCloseModal")
+            | Decrypt current text?
+
     script(src="app.js")
     if process.env.NODE_ENV === 'development'
       script.
