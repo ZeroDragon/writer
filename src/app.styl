@@ -112,10 +112,13 @@ body
     display: none
   -ms-overflow-style: none
   scrollbar-width: none
+  &.dimmed
+    *
+      opacity: 0.2
+    .focus
+      opacity: 1
   & > *
     transition: opacity 0.3s ease-in-out
-  .dimmed
-    opacity: 0.2
 
 /* footer */
 .footer

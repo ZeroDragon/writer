@@ -313,13 +313,15 @@ const app = new Zero('app', {
       if (!currentNode || currentNode === contentEl) return
       // dim all other elements inside e.target
       if (currentNode.innerText.trim() === '') return
-      Array.from(contentEl.children).forEach(child => {
-        if (child !== currentNode) {
-          child.classList.add('dimmed')
-        } else {
-          child.classList.remove('dimmed')
-        }
+      contentEl.classList.add('dimmed')
+      currentNode.classList.add('skip')
+      contentEl.querySelectorAll('.focus:not(.skip)').forEach(el => {
+        el.classList.remove('focus')
       })
+      if (!currentNode.classList.contains('focus')) {
+        currentNode.classList.add('focus')
+      }
+      currentNode.classList.remove('skip')
     },
     transformTime: (seconds) => {
       let [hh, mm, ss] = [0, 0, 0]
