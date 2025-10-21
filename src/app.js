@@ -1,4 +1,4 @@
-/* global Zero Node */
+/* global Zero Node FileReader */
 const setCursor = (element, position) => {
   const newRange = document.createRange()
   const sel = window.getSelection()
@@ -172,7 +172,7 @@ const app = new Zero('app', {
       if (!document.fullscreenElement) return document.documentElement.requestFullscreen()
       document.exitFullscreen()
     },
-    insert_drive_file: () => {
+    article: () => {
       app.data.modal = {
         visible: true,
         title: 'New Draft',
@@ -190,11 +190,29 @@ const app = new Zero('app', {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'draft.html'
+      a.download = 'draft.wtr'
       document.body.appendChild(a)
       a.click()
       document.body.removeChild(a)
       URL.revokeObjectURL(url)
+    },
+    upload_file: () => {
+      const input = document.createElement('input')
+      input.type = 'file'
+      input.accept = '.txt,.wtr'
+      input.onchange = e => {
+        const file = e.target.files[0]
+        if (!file) return
+        const reader = new FileReader()
+        reader.onload = event => {
+          app.data.content = event.target.result
+          app.data.wordCount = app.methods.countWords(app.data.content)
+          window.localStorage.setItem('writerAppData', app.data.content)
+          app.updateDom()
+        }
+        reader.readAsText(file)
+      }
+      input.click()
     },
     help_outlined: () => {
       app.data.modal = {

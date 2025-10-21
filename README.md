@@ -3,10 +3,9 @@ Writer_
 A simple write space without distractions or assistants
 
 ## To Do
+- Add encription for load and save files
 
-- Create native app for desktop
-- Create native app for devices
-
+- ~~Add load button to load a saved file~~  
 - ~~Create icon~~
 - ~~Trigger alert for when 1 word left to goal~~  
 - ~~Trigger alert when 5 seconds left for time limit~~  
@@ -27,6 +26,10 @@ A simple write space without distractions or assistants
 - ~~Set goal timer~~  
 - ~~Automatic save to localstorage~~  
 - ~~Persist theme and sfx configurations~~  
+
+## Maybe do
+- Create native app for desktop
+- Create native app for devices
 
 ---
 # External libraries
