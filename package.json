@@ -1,7 +1,7 @@
 {
   "name": "writer",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple write space without distractions or assistants",
   "license": "ISC",
   "author": "ZeroDragon",
   "type": "commonjs",

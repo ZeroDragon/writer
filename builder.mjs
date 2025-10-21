@@ -80,11 +80,6 @@ if (process.env.NODE_ENV !== 'development') {
     .filter(file => ['.styl', '.pug', '.js'].includes(path.extname(file)))
     .forEach(dispatcher)
   copyAssets()
-  console.log(
-    fs.readdirSync(path.join(__dirname, directories[1]))
-      .map(f => ` - ${f}`).join('\n').green
-  )
-  console.log(path.join(__dirname, directories[1]))
   console.log('Build complete.'.green)
   process.exit(0)
 }
