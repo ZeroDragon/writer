@@ -3,8 +3,8 @@ Writer_
 A simple write space without distractions or assistants
 
 ## To Do
-- Add encription for load and save files
 
+- ~~Add encription for load and save files~~  
 - ~~Add load button to load a saved file~~  
 - ~~Create icon~~
 - ~~Trigger alert for when 1 word left to goal~~  
