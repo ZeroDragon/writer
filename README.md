@@ -4,6 +4,8 @@ A simple write space without distractions or assistants
 
 ## To Do
 
+- Add buttons to increase/decrease text size  
+
 - ~~Add encription for load and save files~~  
 - ~~Add load button to load a saved file~~  
 - ~~Create icon~~
