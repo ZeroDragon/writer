@@ -168,10 +168,6 @@ const app = new Zero('app', {
       app.data.modal.visible = false
       app.updateDom()
     },
-    fullscreen: () => {
-      if (!document.fullscreenElement) return document.documentElement.requestFullscreen()
-      document.exitFullscreen()
-    },
     article: () => {
       app.data.modal = {
         visible: true,
@@ -187,7 +183,7 @@ const app = new Zero('app', {
     },
     save: async () => {
       const encryptedText = await app.methods.encryptText()
-      const blob = new Blob([encryptedText], { type: 'text/plain' })
+      const blob = new Blob([encryptedText], { type: 'application/octet-stream' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -200,19 +196,9 @@ const app = new Zero('app', {
     upload_file: () => {
       const input = document.createElement('input')
       input.type = 'file'
-      // iOS (iPad/iPhone) has a limited/quirky file picker that may hide files
-      // with unknown extensions. To improve compatibility, include broader
-      // MIME types and fall back to removing the accept filter on iOS so the
-      // Files picker shows all files. We still include .wtr so desktop browsers
-      // can filter correctly.
       const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
       if (isiOS) {
-        // Some iPads (especially with iPadOS) behave better when accept is absent
-        // or set to general text types. We'll try a permissive text/* first.
         input.accept = 'text/*,.wtr,application/octet-stream'
-        // On some iOS versions, even text/* is ignored; if that happens the
-        // user can remove the accept filter by calling the file picker with no accept.
-        // We keep the value permissive here to avoid hiding .wtr files.
       } else {
         input.accept = '.txt,.wtr,text/plain'
       }
