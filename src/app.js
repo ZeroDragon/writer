@@ -460,3 +460,8 @@ const app = new Zero('app', {
     }
   }
 })
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Escape' && app.data.modal?.visible) {
+    app.methods.closeModal()
+  }
+})
