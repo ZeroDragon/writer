@@ -158,8 +158,9 @@ const app = new Zero('app', {
       if (!app.data.zenOn) {
         // remove dimmed class from all children
         const contentEl = document.getElementById('content')
-        Array.from(contentEl.children).forEach(child => {
-          child.classList.remove('dimmed')
+        contentEl.classList.remove('dimmed')
+        Array.from(contentEl.getElementsByClassName('focus')).forEach(child => {
+          child.classList.remove('focus')
         })
       }
       app.methods.saveSettings()
