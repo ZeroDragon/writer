@@ -129,6 +129,7 @@ class Zero { // eslint-disable-line no-unused-vars
             const [,, key] = regex.exec(c) || []
             return key ? this.getValue(key) : c
           })
+          .filter(c => c)
         el.className = classes.join(' ')
       }
     })

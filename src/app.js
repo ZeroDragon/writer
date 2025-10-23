@@ -304,7 +304,8 @@ const app = new Zero('app', {
         }
         app.data.lastWordCount = app.data.wordCount
       }
-      app.updateDom(['wordCount'])
+      app.data.writing = 'writing'
+      app.updateDom(['wordCount', 'writing'])
       app.methods.tryZenMode(e)
     },
     tryZenMode: (e) => {
@@ -495,4 +496,9 @@ document.addEventListener('drop', (e) => {
   }
   reader.readAsText(file)
   document.getElementById('dragOverlay').classList.remove('active')
+})
+document.addEventListener('mousemove', (e) => {
+  if (!app.data.writing) return
+  delete app.data.writing
+  app.updateDom(['writing'])
 })
