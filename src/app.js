@@ -465,3 +465,28 @@ document.addEventListener('keyup', (e) => {
     app.methods.closeModal()
   }
 })
+// enable drag and drop file upload
+document.addEventListener('dragover', (e) => {
+  e.preventDefault()
+  document.getElementById('dragOverlay').classList.add('active')
+})
+document.addEventListener('dragleave', (e) => {
+  e.preventDefault()
+  if (!e.relatedTarget || e.relatedTarget.nodeName === 'HTML') {
+    document.getElementById('dragOverlay').classList.remove('active')
+  }
+})
+document.addEventListener('drop', (e) => {
+  e.preventDefault()
+  const file = e.dataTransfer.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = event => {
+    app.data.content = event.target.result
+    app.data.wordCount = app.methods.countWords(app.data.content)
+    window.localStorage.setItem('writerAppData', app.data.content)
+    app.updateDom()
+  }
+  reader.readAsText(file)
+  document.getElementById('dragOverlay').classList.remove('active')
+})

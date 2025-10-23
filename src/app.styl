@@ -232,6 +232,30 @@ input
       &.warning
         background-color: var(--warning)
 
+.dragOverlay
+  position: fixed
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  background-color: var(--darker-background)
+  display: none
+  align-items: center
+  justify-content: center
+  z-index: 2000
+  click-events: none
+  &.active
+    display: flex
+  .drag-text
+    opacity: 0.5
+    font-family: "Roboto Mono", monospace
+    color: var(--foreground)
+    font-size: 24px
+    font-weight: bold
+    padding: 20px 40px
+    border: 2px dashed var(--foreground)
+    border-radius: 16px
+
 /* responsive: stack on small screens */
 @media (max-width: 768px)
   .app
