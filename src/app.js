@@ -11,7 +11,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 const app = new Zero('app', {
   data: {
     wordCount: 0,
-    content: '',
+    content: window.localStorage.getItem('writerAppData') || 'Start writing...',
     sfx: 'music_off',
     soundOn: false,
     soundStatus: 'SFX OFF',
@@ -131,7 +131,7 @@ const app = new Zero('app', {
       }))
     },
     newDraft: () => {
-      app.data.content = ''
+      app.data.content = 'Start writing...'
       app.data.wordCount = 0
       window.localStorage.setItem('writerAppData', app.data.content)
       app.methods.closeModal()
@@ -309,6 +309,10 @@ const app = new Zero('app', {
       app.methods.tryZenMode(e)
     },
     tryZenMode: (e) => {
+      if (app.data.content.trim() === 'Start writing...') {
+        app.data.content = ''
+        app.updateDom(['wordCount', 'content'])
+      }
       if (!app.data.zenOn) return
       const contentEl = document.getElementById('content')
       // get current innerDiv where the cursor is
