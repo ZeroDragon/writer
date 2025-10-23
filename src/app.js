@@ -14,10 +14,12 @@ const app = new Zero('app', {
     content: '',
     sfx: 'music_off',
     soundOn: false,
+    soundStatus: 'SFX OFF',
     theme: 'dark_mode',
     themeName: 'dark',
     zenMode: 'self_improvement',
     zenOn: false,
+    zenStatus: 'Zen Mode OFF',
     timerIsRunning: false,
     writeTimer: 0,
     wordGoal: '',
@@ -98,16 +100,18 @@ const app = new Zero('app', {
     if (soundOn !== undefined) instance.data.soundOn = soundOn
     if (zenOn !== undefined) instance.data.zenOn = zenOn
     if (savedData) instance.data.content = savedData
-    app.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
-    app.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
-    app.data.zenMode = instance.data.zenOn ? 'local_pizza' : 'self_improvement'
+    instance.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
+    instance.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
+    instance.data.zenMode = instance.data.zenOn ? 'local_pizza' : 'self_improvement'
+    instance.data.soundStatus = instance.data.soundOn ? 'SFX ON' : 'SFX OFF'
+    instance.data.zenStatus = instance.data.zenOn ? 'Zen Mode ON' : 'Zen Mode OFF'
     // get words from html content
-    instance.data.wordCount = instance.methods.countWords(app.data.content)
+    instance.data.wordCount = instance.methods.countWords(instance.data.content)
     const contentEl = document.getElementById('content')
     Array.from(contentEl.children).forEach(child => {
       child.classList.remove('dimmed')
     })
-    app.updateDom()
+    instance.updateDom()
   },
   methods: {
     countWords: (rawHtml) => {
@@ -147,14 +151,16 @@ const app = new Zero('app', {
     '{{sfx}}': () => {
       app.data.soundOn = !app.data.soundOn
       app.data.sfx = app.data.soundOn ? 'music_note' : 'music_off'
-      app.updateDom(['soundOn', '{{sfx}}'])
+      app.data.soundStatus = app.data.soundOn ? 'SFX ON' : 'SFX OFF'
+      app.updateDom(['soundOn', '{{sfx}}', 'soundStatus'])
       if (app.data.soundOn) app.soundName({ key: 'Load' })
       app.methods.saveSettings()
     },
     '{{zenMode}}': () => {
       app.data.zenOn = !app.data.zenOn
       app.data.zenMode = app.data.zenOn ? 'local_pizza' : 'self_improvement'
-      app.updateDom(['zenOn', '{{zenMode}}'])
+      app.data.zenStatus = app.data.zenOn ? 'Zen Mode ON' : 'Zen Mode OFF'
+      app.updateDom(['zenOn', '{{zenMode}}', 'zenStatus'])
       if (!app.data.zenOn) {
         // remove dimmed class from all children
         const contentEl = document.getElementById('content')

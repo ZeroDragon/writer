@@ -6,6 +6,7 @@ A simple write space without distractions or assistants
 
 - Add buttons to increase/decrease text size  
 
+- ~~Add drag and drop support to load files~~  
 - ~~Add encription for load and save files~~  
 - ~~Add load button to load a saved file~~  
 - ~~Create icon~~
