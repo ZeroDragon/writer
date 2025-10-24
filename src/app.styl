@@ -237,6 +237,43 @@ input
       &.warning
         background-color: var(--warning)
 
+.toolBar
+  position: fixed
+  bottom: 60px
+  left: 50%
+  transform: translateX(-50%)
+  border: 1px solid transparent
+  border-radius: 8px
+  padding: 8px
+  display: flex
+  gap: 4px
+  z-index: 1500
+  opacity: 0.3
+  transition: opacity 0.3s ease-in-out
+  &.writing
+    opacity: 0
+  &:hover
+    opacity: 1
+    background-color: var(--darker-background)
+    border: 1px solid var(--accent)
+  .toolButton
+    background: none
+    border: none
+    padding: 4px
+    border-radius: 4px
+    cursor: pointer
+    color: var(--foreground)
+    display: flex
+    align-items: center
+    justify-content: center
+    font-size: 20px
+    opacity: 0.6
+    transition: background-color 0.2s ease-in-out, opacity 0.2s ease-in-out
+    &:hover
+      background-color: var(--accent)
+      color: var(--buttonForeground)
+      opacity: 1
+
 .dragOverlay
   position: fixed
   top: 0
@@ -272,11 +309,16 @@ input
       "content"\
       "footer"
 
+  .content
+    padding: 20px
+
   .sidebar
     position: fixed
     ul
       display: flex
       flex-direction: row
       li .item .label
-        left: 10px
-        text-align: left
+        top: 50px
+        left: 50%
+        transform: translateX(-50%)
+        text-align: center

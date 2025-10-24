@@ -23,7 +23,8 @@ const app = new Zero('app', {
     timerIsRunning: false,
     writeTimer: 0,
     wordGoal: '',
-    lastWordCount: 0
+    lastWordCount: 0,
+    fontSize: 1
   },
   preload: async (instance) => {
     async function loadSound (url) {
@@ -223,7 +224,7 @@ const app = new Zero('app', {
       }
       input.click()
     },
-    help_outlined: () => {
+    help: () => {
       app.data.modal = {
         visible: true,
         title: 'Keyboard Shortcuts',
@@ -246,47 +247,6 @@ const app = new Zero('app', {
       }
     },
     updateContent: (e) => {
-      // catch alt + s for save
-      if ((e.altKey) && e.key.toLowerCase() === 's') {
-        return app.methods.save()
-      }
-      // catch alt + n for new draft (case-insensitive)
-      if ((e.altKey) && e.key && e.key.toLowerCase() === 'n') {
-        return app.methods.draft()
-      }
-      // catch alt 1 to 3 for h1 to h3
-      if (e.altKey || e.ctrlKey) {
-        // get current div
-        const selection = window.getSelection()
-        if (!selection.rangeCount) return
-        const range = selection.getRangeAt(0)
-        let currentNode = range.startContainer
-        while (currentNode && currentNode !== e.target) {
-          if (currentNode.nodeType === Node.ELEMENT_NODE && ['DIV', 'H1', 'H2'].includes(currentNode.tagName)) break
-          currentNode = currentNode.parentNode
-        }
-        if (!currentNode || currentNode === e.target) return
-        // save current cursor position
-        const cursorPosition = range.startOffset
-        let newElement = null
-        if ([0, 1, 2].includes(~~e.key)) {
-          // wrap in h1 to h2 and regular div
-          const newTag = ['DIV', 'H1', 'H2'][e.key]
-          if (!newTag) return
-          newElement = document.createElement(newTag)
-          newElement.textContent = currentNode.textContent
-          currentNode.parentNode.replaceChild(newElement, currentNode)
-          // set cursor to saved position
-          setCursor(newElement?.firstChild || currentNode, cursorPosition)
-        }
-        if ([3, 4, 5, 6].includes(~~e.key)) {
-          currentNode.classList.toggle('align-left', e.key === '3')
-          currentNode.classList.toggle('align-center', e.key === '4')
-          currentNode.classList.toggle('align-right', e.key === '5')
-          currentNode.classList.toggle('align-justify', e.key === '6')
-        }
-        return
-      }
       // if firstchild is plain text node, wrap it in a div
       if (e.target.firstChild && e.target.firstChild.nodeType === Node.TEXT_NODE) {
         const div = document.createElement('div')
@@ -307,6 +267,69 @@ const app = new Zero('app', {
       app.data.writing = 'writing'
       app.updateDom(['wordCount', 'writing'])
       app.methods.tryZenMode(e)
+    },
+    getSelectionParent: (returnParent = false) => {
+      let parentElement = null
+      const selection = window.getSelection()
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0)
+        parentElement = range.startContainer.parentElement
+      }
+      if (returnParent) return parentElement
+      return (align) => {
+        parentElement.style.textAlign = align
+        setCursor(parentElement.firstChild, parentElement.firstChild.length)
+        const contentEl = document.getElementById('content')
+        app.data.content = contentEl.innerHTML
+        window.localStorage.setItem('writerAppData', app.data.content)
+      }
+    },
+    format_align_left: () => {
+      app.methods.getSelectionParent()('left')
+    },
+    format_align_center: () => {
+      app.methods.getSelectionParent()('center')
+    },
+    format_align_right: () => {
+      app.methods.getSelectionParent()('right')
+    },
+    format_align_justify: () => {
+      app.methods.getSelectionParent()('justify')
+    },
+    format_text: (node) => {
+      const parent = app.methods.getSelectionParent(true)
+      const newElement = document.createElement(node)
+      newElement.innerHTML = parent.innerHTML
+      parent.replaceWith(newElement)
+      setCursor(newElement.firstChild, newElement.firstChild.length)
+      const contentEl = document.getElementById('content')
+      app.data.content = contentEl.innerHTML
+      window.localStorage.setItem('writerAppData', app.data.content)
+    },
+    format_h1: () => {
+      app.methods.format_text('h1')
+    },
+    format_h2: () => {
+      app.methods.format_text('h2')
+    },
+    format_paragraph: () => {
+      app.methods.format_text('div')
+    },
+    updateFontSize: () => {
+      const contentEl = document.getElementById('content')
+      contentEl.style.fontSize = `${app.data.fontSize}em`
+    },
+    zoom_in: () => {
+      app.data.fontSize = Math.min(app.data.fontSize + 0.1, 3)
+      app.methods.updateFontSize()
+    },
+    zoom_out: () => {
+      app.data.fontSize = Math.max(app.data.fontSize - 0.1, 0.5)
+      app.methods.updateFontSize()
+    },
+    search_check: () => {
+      app.data.fontSize = 1
+      app.methods.updateFontSize()
     },
     tryZenMode: (e) => {
       if (app.data.content.trim() === 'Start writing...') {

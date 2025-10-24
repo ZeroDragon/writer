@@ -3,9 +3,9 @@ Writer_
 A simple write space without distractions or assistants
 
 ## To Do
+- Add intro and usage helper
 
-- Add buttons to increase/decrease text size  
-
+- ~~Add buttons to increase/decrease text size~~  
 - ~~Add drag and drop support to load files~~  
 - ~~Add encription for load and save files~~  
 - ~~Add load button to load a saved file~~  
@@ -20,12 +20,12 @@ A simple write space without distractions or assistants
 - ~~Toggle theme~~  
 - ~~Zen mode~~  
 - ~~Help modal~~  
-- ~~Ctrl + 1 for H1~~  
-- ~~Ctrl + 2 for H2~~  
-- ~~Ctrl + 3 for left align~~  
-- ~~Ctrl + 4 for center align~~  
-- ~~Ctrl + 5 for right align~~  
-- ~~Ctrl + 6 for justified text~~  
+- ~~Ctrl + 1 for H1~~ (deprecated)  
+- ~~Ctrl + 2 for H2~~ (deprecated)  
+- ~~Ctrl + 3 for left align~~ (deprecated)  
+- ~~Ctrl + 4 for center align~~ (deprecated)  
+- ~~Ctrl + 5 for right align~~ (deprecated)  
+- ~~Ctrl + 6 for justified text~~ (deprecated)  
 - ~~Set goal timer~~  
 - ~~Automatic save to localstorage~~  
 - ~~Persist theme and sfx configurations~~  
@@ -33,7 +33,3 @@ A simple write space without distractions or assistants
 ## Maybe do
 - Create native app for desktop
 - Create native app for devices
-
----
-# External libraries
-[Icons](https://marella.github.io/material-design-icons/demo/font/#outlined)

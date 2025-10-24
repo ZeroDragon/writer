@@ -8,7 +8,7 @@
     ['{{zenMode}}', '{{zenStatus}}'],
     ['spacer'],
     ['lock', 'Encryption'],
-    ['help_outlined', 'Help'],
+    ['help', 'Help'],
   ]
 -
   const helpData = [
@@ -81,6 +81,12 @@ html(lang="en")
         )
         span(z-if="timerIsRunning" z:click="resetTimeGoal")
           .icon.material-icons-outlined timer_off
+      div(z-class="toolBar {{writing}}")
+        for cmd in ['format_h1', 'format_h2', 'format_paragraph','format_align_left', 'format_align_center', 'format_align_right', 'format_align_justify', 'zoom_in', 'zoom_out', 'search_check']
+          button.toolButton(
+            z:click=`${cmd}`
+          )
+            .icon.material-icons-outlined #{cmd}
     .modal(z-if="modal.visible")
       .modal-content
         .title {{ modal.title }}
