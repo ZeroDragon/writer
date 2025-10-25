@@ -108,6 +108,12 @@ html(lang="en")
           label
             input(type="checkbox" name="decryptOnCloseModal")
             | Decrypt current text?
+        .error-message(style="display: none;")
+          b Error while decrypting.
+          br
+          |Are you sure the key and secret are correct?
+          br
+          |Is the draft encrypted?
 
     script(src="app.js")
     if process.env.NODE_ENV === 'development'

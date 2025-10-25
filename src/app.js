@@ -484,12 +484,23 @@ const app = new Zero('app', {
       const [encryptionKey, encryptionSecret] = ['encryptionKey', 'encryptionSecret']
         .map(name => app.data.modal.message.querySelector(`.modal-content input[name="${name}"]`))
       const decryptOnCloseModal = app.data.modal.message.querySelector('.modal-content input[name="decryptOnCloseModal"]').checked
+      const errorEl = app.data.modal.message.querySelector('.modal-content .error-message')
+      errorEl.style.display = 'none'
+      if (!encryptionKey.value || !encryptionSecret.value) return
       app.data.encryption = {
         key: encryptionKey.value,
         secret: encryptionSecret.value
       }
       if (decryptOnCloseModal) {
-        app.data.content = await app.methods.decryptText()
+        let errorFound = false
+        app.data.content = await app.methods.decryptText().catch(e => {
+          errorFound = true
+          return app.data.content
+        })
+        if (errorFound) {
+          errorEl.style.display = 'block'
+          return
+        }
         app.data.wordCount = app.methods.countWords(app.data.content)
         window.localStorage.setItem('writerAppData', app.data.content)
       }
