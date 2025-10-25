@@ -11,8 +11,9 @@ jobs:
     env:
       build_dir: ./public
       source_dir: ./src
-      AppName: Writer_
+      AppName: Writeros
       Author: Zero
+      domain: writeros.app
     runs-on: ubuntu-latest
     permissions:
       contents: write

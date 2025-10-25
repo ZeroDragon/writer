@@ -112,6 +112,9 @@ body
   caret-color: var(--accent)
   scroll-behavior: smooth
   max-height: calc(80vh)
+  &::selection
+    background: var(--accent)
+    color: var(--buttonForeground)
   // disable scrollbars
   &::-webkit-scrollbar
     display: none
@@ -124,14 +127,6 @@ body
       opacity: 1
   & > *
     transition: opacity 0.3s ease-in-out
-  .align-left
-    text-align: left
-  .align-center
-    text-align: center
-  .align-right
-    text-align: right
-  .align-justify
-    text-align: justify
 
 /* footer */
 .footer
@@ -189,7 +184,6 @@ input
     margin: 0
 
   .modal-content
-    min-width: 50%
     background-color: var(--app-background)
     padding: 20px
     border-radius: 8px
@@ -204,6 +198,7 @@ input
         margin-bottom: 10px
       .encryptInputs
         display: flex
+        flex-wrap: wrap;
         input
           margin: 0 5px
           flex: 1

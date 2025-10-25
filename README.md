@@ -1,4 +1,4 @@
-Writer_
+Writeros
 ====================
 A simple write space without distractions or assistants
 

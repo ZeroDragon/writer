@@ -224,17 +224,21 @@ const app = new Zero('app', {
       }
       input.click()
     },
-    help: () => {
+    info: () => {
       app.data.modal = {
         visible: true,
-        title: 'Keyboard Shortcuts',
-        message: document.getElementById('helpData').innerHTML,
+        title: 'About Writeros',
+        message: document.getElementById('infoData').innerHTML,
         buttons: {
-          primary: { text: 'Close', action: 'closeModal' }
+          secondary: { text: 'Close', action: 'closeModal' },
+          primary: { text: 'Buy me a coffee', action: 'coffee' }
         }
       }
       app.bindEvents()
       app.updateDom()
+    },
+    coffee: () => {
+      window.open('https://buymeacoffee.com/zerodragon', '_blank')
     },
     createSound: (e) => {
       // use a sound from soundsMap based on key pressed
@@ -502,6 +506,13 @@ document.addEventListener('keyup', (e) => {
 // enable drag and drop file upload
 document.addEventListener('dragover', (e) => {
   e.preventDefault()
+  // apply only if dragging a file
+  if (e.dataTransfer.items && e.dataTransfer.items[0].kind === 'file') {
+    e.dataTransfer.dropEffect = 'copy'
+  } else {
+    e.dataTransfer.dropEffect = 'none'
+    return
+  }
   document.getElementById('dragOverlay').classList.add('active')
 })
 document.addEventListener('dragleave', (e) => {

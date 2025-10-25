@@ -2,7 +2,8 @@
 build_dir = "public"
 source_dir = "src"
 SESSION_NAME = "builder"
-AppName = "Writer_"
+AppName = "Writeros"
+domain = "writeros.app"
 Author = "Zero"
 
 [tasks.build]

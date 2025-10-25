@@ -80,7 +80,7 @@ if (process.env.NODE_ENV !== 'development') {
     .filter(file => ['.styl', '.pug', '.js'].includes(path.extname(file)))
     .forEach(dispatcher)
   copyAssets()
-  fs.writeFileSync(path.join(__dirname, directories[1], 'CNAME'), 'writeros.app\n')
+  fs.writeFileSync(path.join(__dirname, directories[1], 'CNAME'), `${process.env.domain}\n`)
   console.log('Build complete.'.green)
   process.exit(0)
 }

@@ -8,19 +8,7 @@
     ['{{zenMode}}', '{{zenStatus}}'],
     ['spacer'],
     ['lock', 'Encryption'],
-    ['help', 'Help'],
-  ]
--
-  const helpData = [
-    ['S', 'Save Draft'],
-    ['N', 'New Draft'],
-    [0,'Regular text'],
-    [1,'Heading 1'],
-    [2,'Heading 2'],
-    [3,'Align left'],
-    [4,'Align center'],
-    [5,'Align right'],
-    [6,'Justify'],
+    ['info', 'About'],
   ]
 doctype html
 html(lang="en")
@@ -98,14 +86,19 @@ html(lang="en")
               z:click=`modal.buttons.${button}.action`
               z-if=`modal.buttons.${button}`
             ) {{ modal.buttons.#{button}.text }}
-    #helpData(z-if="false")
+    #infoData(z-if="false")
       ul
-        for desc in helpData
-          li
-            strong Alt (ctrl on mac) + #{desc[0]}
-            |: #{desc[1]}
         li.
-          <br/>Also any regular text editing shortcuts like<br/><strong>Ctrl + B</strong> for bold, <strong>Ctrl + I</strong> for italics, etc.
+          Writeros aims to be a minimal, distraction-free writing application that helps you focus on your writing.<br/><br/>
+        li.
+          Features include:<br/>
+          - Word count goals<br/>
+          - Time-based writing sessions<br/>
+          - Zen mode for distraction-free writing<br/>
+          - Optional sound effects to enhance focus<br/>
+          - Draft encryption for privacy<br/><br/>
+        li(style="text-align: right;").
+          Made with ♥ by Zero.
     #encrypt(z-if="false")
       #encryptInputs
         .txt If you set an encryption key and secret, your drafts will be encrypted in your browser before being saved to disk. You will need to provide the same key and secret to open your drafts again.
