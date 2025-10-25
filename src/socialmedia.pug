@@ -1,5 +1,5 @@
 - 
-  const description = `Writeros aims to be a minimal, distraction-free writing application that helps you focus on your writing.
+  const description = `${process.env.AppName} aims to be a minimal, distraction-free writing application that helps you focus on your writing.
 
     Features include:
     - Word count goals
@@ -10,15 +10,15 @@
   `
 
 meta(name="description" content=`${description}`)
-meta(property="og:url" content="https://writeros.app")
+meta(property="og:url" content=`https://${process.env.domain}`)
 meta(property="og:type" content="website")
-meta(property="og:title" content="Writeros")
+meta(property="og:title" content=`${process.env.AppName}`)
 meta(property="og:description" content=`${description}`)
-meta(property="og:image" content="assets/socialmedia.png")
+meta(property="og:image" content=`https://${process.env.domain}/assets/socialmedia.png`)
 
 meta(name="twitter:card" content="summary_large_image")
-meta(property="twitter:domain" content="writeros.app")
-meta(property="twitter:url" content="https://writeros.app")
-meta(name="twitter:title" content="Writeros")
+meta(property="twitter:domain" content=`https://${process.env.domain}`)
+meta(property="twitter:url" content=`https://${process.env.domain}`)
+meta(name="twitter:title" content=`${process.env.AppName}`)
 meta(name="twitter:description" content=`${description}`)
-meta(name="twitter:image" content="assets/socialmedia.png")
+meta(name="twitter:image" content=`https://${process.env.domain}/assets/socialmedia.png`)
