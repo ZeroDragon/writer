@@ -8,17 +8,23 @@ const setCursor = (element, position) => {
   sel.addRange(newRange)
 }
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+// get saved data from localStorage
+const getLS = () => {
+  const savedData = window.localStorage.getItem('writerAppData')
+  const { soundOn, themeName, zenOn } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
+  return { savedData, soundOn, themeName, zenOn }
+}
 const app = new Zero('app', {
   data: {
     wordCount: 0,
-    content: window.localStorage.getItem('writerAppData') || 'Start writing...',
+    content: getLS().savedData || 'Start writing...',
     sfx: 'music_off',
-    soundOn: false,
+    soundOn: getLS().soundOn || false,
     soundStatus: 'SFX OFF',
     theme: 'dark_mode',
-    themeName: 'dark',
+    themeName: getLS().themeName || 'dark',
     zenMode: 'self_improvement',
-    zenOn: false,
+    zenOn: getLS().zenOn || false,
     zenStatus: 'Zen Mode OFF',
     timerIsRunning: false,
     writeTimer: 0,
@@ -94,13 +100,6 @@ const app = new Zero('app', {
         el.dispatchEvent(new CustomEvent('tick'))
       })
     }, 1000)
-    // get saved data from localStorage
-    const savedData = window.localStorage.getItem('writerAppData')
-    const { soundOn, themeName, zenOn } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
-    if (themeName) instance.data.themeName = themeName
-    if (soundOn !== undefined) instance.data.soundOn = soundOn
-    if (zenOn !== undefined) instance.data.zenOn = zenOn
-    if (savedData) instance.data.content = savedData
     instance.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
     instance.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
     instance.data.zenMode = instance.data.zenOn ? 'local_pizza' : 'self_improvement'
