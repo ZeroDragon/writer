@@ -5,6 +5,7 @@ A simple write space without distractions or assistants
 ## To Do
 - Add intro and usage helper
 
+- ~~add serviceworker to allow app functionality without connection~~  
 - ~~Add buttons to increase/decrease text size~~  
 - ~~Add drag and drop support to load files~~  
 - ~~Add encription for load and save files~~  

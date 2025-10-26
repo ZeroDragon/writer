@@ -393,7 +393,7 @@ const app = new Zero('app', {
     setTimeGoal: (e) => {
       app.data.timerIsRunning = true
       const value = e.target.value
-      // value must be in format [[D]D:][[M]M:][[S]S]
+      // value must be in format [[H]H:][[M]M:][[S]S]
       const regex = /^((\d{1,2}):)?((\d{1,2}):)?(\d{1,2})$/
       const match = regex.exec(value)
       if (!match) {

@@ -13,6 +13,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 const directories = [process.env.source_dir, process.env.build_dir]
+const packageJSON = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'))
 
 const dispatcher = filePath => {
   const ext = path.extname(filePath)
@@ -23,6 +24,7 @@ const dispatcher = filePath => {
 }
 
 const buildStylus = file => {
+  if (file.startsWith('_')) return
   console.log(' - Building Stylus...'.magenta)
   const files = [
     path.join(__dirname, directories[0], `${file}.styl`),
@@ -39,6 +41,7 @@ const buildStylus = file => {
 }
 
 const buildPug = file => {
+  if (file.startsWith('_')) return
   console.log(' - Building Pug...'.magenta)
   const files = [
     path.join(__dirname, directories[0], `${file}.pug`),
@@ -54,7 +57,9 @@ const copyJS = file => {
     path.join(__dirname, directories[0], `${file}.js`),
     path.join(__dirname, directories[1], `${file}.js`)
   ]
-  const result = UglifyJS.minify(fs.readFileSync(files[0], 'utf8'))
+  const rawFile = fs.readFileSync(files[0], 'utf8')
+    .replace(/{{CACHE_NAME}}/g, `${process.env.AppName}-cache-v${packageJSON.version}`)
+  const result = UglifyJS.minify(rawFile)
   if (result.error) throw result.error
   fs.writeFileSync(files[1], result.code)
 }
