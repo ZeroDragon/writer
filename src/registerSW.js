@@ -9,11 +9,10 @@ function registerServiceWorker () {
       navigator.serviceWorker.register('service-worker.js')
         .then(function (_registration) {
           // Serviceworker registered successfully
-          console.log(':)')
         })
         .catch(function (_error) {
           // Failed to register serviceworker
-          console.log(':(')
+          console.error(':(')
         })
     })
   }
