@@ -112,6 +112,8 @@ const app = new Zero('app', {
       child.classList.remove('dimmed')
     })
     instance.updateDom()
+    if (instance.data.content.trim() !== 'Start writing...') return
+    instance.methods.info()
   },
   methods: {
     countWords: (rawHtml) => {

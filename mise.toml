@@ -37,9 +37,9 @@ fi
 """
 
 [tasks.deploy]
-# run npm version patch without git tag
 run = """
 #!/bin/bash
+jj new
 npm version patch --no-git-tag-version
 jj describe -m "Deploying version $(node -p "require('./package.json').version")"
 jj new
