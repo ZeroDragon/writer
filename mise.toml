@@ -41,7 +41,8 @@ fi
 run = """
 #!/bin/bash
 npm version patch --no-git-tag-version
-jj describe "Deploying version $(node -p "require('./package.json').version")"
+jj describe -m "Deploying version $(node -p "require('./package.json').version")"
 jj new
 jj mm @-
+jj git push
 """
