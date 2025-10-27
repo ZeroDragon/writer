@@ -5,6 +5,7 @@ SESSION_NAME = "builder"
 AppName = "Writeros"
 domain = "writeros.app"
 Author = "Zero"
+NODE_ENV = "development"
 
 [tasks.build]
 run = "node builder.mjs"
