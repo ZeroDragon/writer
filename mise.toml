@@ -35,3 +35,13 @@ else
     tmux attach-session -t "$SESSION_NAME"
 fi
 """
+
+[tasks.deploy]
+# run npm version patch without git tag
+run = """
+#!/bin/bash
+npm version patch --no-git-tag-version
+jj describe "Deploying version $(node -p "require('./package.json').version")"
+jj new
+jj mm @-
+"""
