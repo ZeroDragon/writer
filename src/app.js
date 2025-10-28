@@ -337,6 +337,7 @@ const app = new Zero('app', {
       app.methods.updateFontSize()
     },
     tryZenMode: (e) => {
+      console.log(e)
       if (app.data.content.trim() === 'Start writing...') {
         app.data.content = ''
         app.updateDom(['wordCount', 'content'])
@@ -348,6 +349,10 @@ const app = new Zero('app', {
       if (!selection.rangeCount) return
       const range = selection.getRangeAt(0)
       let currentNode = range.startContainer
+      // sometimes the currentNode is a text node, so we need to traverse up to the parent div/h1/h2
+      while (currentNode && !['DIV', 'H1', 'H2'].includes(currentNode.tagName)) {
+        currentNode = currentNode.parentNode
+      }
       while (currentNode && currentNode !== e.target) {
         if (currentNode.nodeType === Node.ELEMENT_NODE && ['DIV', 'H1', 'H2'].includes(currentNode.tagName)) break
         currentNode = currentNode.parentNode
@@ -466,6 +471,8 @@ const app = new Zero('app', {
       encryptionSecret.value = app.data.encryption?.secret || ''
     },
     encryptText: async () => {
+      // clean app.data.content from any class attributes
+      app.data.content = app.data.content.replace(/ class="[^"]*"/g, '')
       if (!app.data.encryption?.key || !app.data.encryption?.secret) return app.data.content
       return encryptText(
         app.data.content,
