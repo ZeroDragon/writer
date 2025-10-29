@@ -114,10 +114,21 @@ const app = new Zero('app', {
       child.classList.remove('dimmed')
     })
     instance.updateDom()
+    instance.methods.setContentFont()
     if (instance.data.content.trim() !== 'Start writing...') return
     instance.methods.info()
   },
   methods: {
+    setContentFont: () => {
+      const contentEl = document.getElementById('content')
+      const isEncrypted = app.methods.textIsEncrypted()
+      if (isEncrypted) {
+        // add class encrypted to contentEl
+        contentEl.classList.add('encrypted')
+      } else {
+        contentEl.classList.remove('encrypted')
+      }
+    },
     countWords: (rawHtml) => {
       const tmp = document.createElement('div')
       tmp.innerHTML = rawHtml
@@ -219,6 +230,7 @@ const app = new Zero('app', {
         const reader = new FileReader()
         reader.onload = event => {
           app.data.content = event.target.result
+          app.methods.setContentFont()
           app.data.wordCount = app.methods.countWords(app.data.content)
           app.methods.saveWriterData()
           app.updateDom()
@@ -490,14 +502,15 @@ const app = new Zero('app', {
       encryptionKey.value = app.data.encryption?.key || ''
       encryptionSecret.value = app.data.encryption?.secret || ''
     },
+    textIsEncrypted: () => {
+      const txt = app.data.content.replace(/<[^>]+>/g, '')
+      return (/^[0-9a-fA-F]+$/.test(txt) && txt.length % 32 === 0)
+    },
     encryptText: async () => {
       // clean app.data.content from any class attributes
       app.data.content = app.data.content.replace(/ class="[^"]*"/g, '')
       // is text is already encrypted, return as is (encrypted text is hex only one word)
-      const txt = app.data.content.replace(/<[^>]+>/g, '')
-      if (/^[0-9a-fA-F]+$/.test(txt) && txt.length % 32 === 0) {
-        return app.data.content
-      }
+      if (app.methods.textIsEncrypted()) return app.data.content
       if (!app.data.encryption?.key || !app.data.encryption?.secret) return app.data.content
       return encryptText(
         app.data.content,
@@ -540,6 +553,7 @@ const app = new Zero('app', {
           errorEl.style.display = 'block'
           return
         }
+        app.methods.setContentFont()
         app.data.wordCount = app.methods.countWords(app.data.content)
       }
       await app.methods.saveWriterData()
@@ -579,6 +593,7 @@ document.addEventListener('drop', (e) => {
   reader.onload = event => {
     app.data.content = event.target.result
     app.data.wordCount = app.methods.countWords(app.data.content)
+    app.methods.setContentFont()
     app.methods.saveWriterData()
     app.updateDom()
   }
