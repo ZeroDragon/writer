@@ -39,7 +39,11 @@ fi
 [tasks.deploy]
 run = """
 #!/bin/bash
-jj new
+if jj log -r '@ & empty()' --limit 1 --no-graph >/dev/null; then
+  echo "Current commit is empty."
+else
+  jj new
+fi
 npm version patch --no-git-tag-version
 jj describe -m "Deploying version $(node -p "require('./package.json').version")"
 jj new
