@@ -26,6 +26,8 @@ const app = new Zero('app', {
     zenMode: 'self_improvement',
     zenOn: getLS().zenOn || false,
     zenStatus: 'Zen Mode OFF',
+    lock: 'lock_open_right',
+    lockdesc: 'Encryption OFF',
     timerIsRunning: false,
     writeTimer: 0,
     wordGoal: '',
@@ -132,10 +134,10 @@ const app = new Zero('app', {
         zenOn: app.data.zenOn
       }))
     },
-    newDraft: () => {
+    newDraft: async () => {
       app.data.content = 'Start writing...'
       app.data.wordCount = 0
-      window.localStorage.setItem('writerAppData', app.data.content)
+      await app.methods.saveWriterData()
       app.methods.closeModal()
       app.updateDom()
     },
@@ -218,7 +220,7 @@ const app = new Zero('app', {
         reader.onload = event => {
           app.data.content = event.target.result
           app.data.wordCount = app.methods.countWords(app.data.content)
-          window.localStorage.setItem('writerAppData', app.data.content)
+          app.methods.saveWriterData()
           app.updateDom()
         }
         reader.readAsText(file)
@@ -251,6 +253,25 @@ const app = new Zero('app', {
         app.data.lastKey = e.key
       }
     },
+    saveWriterData: async () => {
+      window.localStorage.setItem('writerAppData', await app.methods.encryptText())
+    },
+    tryAutoSave: async () => {
+      // throtle to save only if user stopped typing for 1 second
+      if (app.data.saveTimeout) {
+        clearTimeout(app.data.saveTimeout)
+      }
+      app.data.saveTimeout = setTimeout(async () => {
+        await app.methods.saveWriterData()
+        app.data.savingStatus = 'saving'
+        app.updateDom(['savingStatus'])
+        setTimeout(() => {
+          app.data.savingStatus = ''
+          app.updateDom(['savingStatus'])
+        }, 500)
+        delete app.data.saveTimeout
+      }, 1000)
+    },
     updateContent: (e) => {
       // if firstchild is plain text node, wrap it in a div
       if (e.target.firstChild && e.target.firstChild.nodeType === Node.TEXT_NODE) {
@@ -261,7 +282,7 @@ const app = new Zero('app', {
         setCursor(div, 1)
       }
       app.data.content = e.target.innerHTML
-      window.localStorage.setItem('writerAppData', app.data.content)
+      app.methods.tryAutoSave()
       app.data.wordCount = app.methods.countWords(app.data.content)
       if (app.data.wordCount !== app.data.lastWordCount) {
         if (app.data.wordGoal && app.data.wordCount === app.data.wordGoal - 1) {
@@ -286,7 +307,7 @@ const app = new Zero('app', {
         setCursor(parentElement.firstChild, parentElement.firstChild.length)
         const contentEl = document.getElementById('content')
         app.data.content = contentEl.innerHTML
-        window.localStorage.setItem('writerAppData', app.data.content)
+        app.methods.saveWriterData()
       }
     },
     format_align_left: () => {
@@ -309,7 +330,7 @@ const app = new Zero('app', {
       setCursor(newElement.firstChild, newElement.firstChild.length)
       const contentEl = document.getElementById('content')
       app.data.content = contentEl.innerHTML
-      window.localStorage.setItem('writerAppData', app.data.content)
+      app.methods.saveWriterData()
     },
     format_h1: () => {
       app.methods.format_text('h1')
@@ -337,7 +358,6 @@ const app = new Zero('app', {
       app.methods.updateFontSize()
     },
     tryZenMode: (e) => {
-      console.log(e)
       if (app.data.content.trim() === 'Start writing...') {
         app.data.content = ''
         app.updateDom(['wordCount', 'content'])
@@ -422,7 +442,7 @@ const app = new Zero('app', {
       app.data.writeTimer = totalSeconds
       app.methods.updateTimeGoal()
     },
-    tickTimeGoal: (e) => {
+    tickTimeGoal: _e => {
       if (app.data.timerIsRunning) {
         app.data.writeTimer -= 1
         app.methods.updateTimeGoal()
@@ -452,7 +472,7 @@ const app = new Zero('app', {
         app.data.wordGoal = num
       }
     },
-    lock: () => {
+    '{{lock}}': () => {
       const encryptDiv = document.getElementById('encryptInputs').cloneNode(true)
       app.data.modal = {
         visible: true,
@@ -473,6 +493,11 @@ const app = new Zero('app', {
     encryptText: async () => {
       // clean app.data.content from any class attributes
       app.data.content = app.data.content.replace(/ class="[^"]*"/g, '')
+      // is text is already encrypted, return as is (encrypted text is hex only one word)
+      const txt = app.data.content.replace(/<[^>]+>/g, '')
+      if (/^[0-9a-fA-F]+$/.test(txt) && txt.length % 32 === 0) {
+        return app.data.content
+      }
       if (!app.data.encryption?.key || !app.data.encryption?.secret) return app.data.content
       return encryptText(
         app.data.content,
@@ -494,10 +519,16 @@ const app = new Zero('app', {
       const decryptOnCloseModal = app.data.modal.message.querySelector('.modal-content input[name="decryptOnCloseModal"]').checked
       const errorEl = app.data.modal.message.querySelector('.modal-content .error-message')
       errorEl.style.display = 'none'
-      if (!encryptionKey.value || !encryptionSecret.value) return
       app.data.encryption = {
         key: encryptionKey.value,
         secret: encryptionSecret.value
+      }
+      app.data.lock = 'lock'
+      app.data.lockdesc = 'Encryption ON'
+      if (!encryptionKey.value || !encryptionSecret.value) {
+        app.data.lock = 'lock_open_right'
+        app.data.lockdesc = 'Encryption OFF'
+        await app.methods.saveWriterData()
       }
       if (decryptOnCloseModal) {
         let errorFound = false
@@ -510,10 +541,10 @@ const app = new Zero('app', {
           return
         }
         app.data.wordCount = app.methods.countWords(app.data.content)
-        window.localStorage.setItem('writerAppData', app.data.content)
       }
+      await app.methods.saveWriterData()
       app.methods.closeModal()
-      app.updateDom()
+      app.updateDom(['content', 'wordCount', '{{lock}}'])
     }
   }
 })
@@ -548,7 +579,7 @@ document.addEventListener('drop', (e) => {
   reader.onload = event => {
     app.data.content = event.target.result
     app.data.wordCount = app.methods.countWords(app.data.content)
-    window.localStorage.setItem('writerAppData', app.data.content)
+    app.methods.saveWriterData()
     app.updateDom()
   }
   reader.readAsText(file)

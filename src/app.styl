@@ -56,6 +56,17 @@ body
   -ms-user-select: none
   user-select: none
 
+.savingIndicator
+  position: fixed
+  top: 10px
+  left: 20px
+  font-size: 14px
+  opacity: 0
+  color: var(--accent)
+  transition: opacity 0.5s ease-in-out
+  &.saving
+    opacity: 1
+
 /* regions */
 .sidebar
   font-weight: 300
@@ -94,7 +105,7 @@ body
       position: fixed
       right: 60px
       text-align: right
-      width: 110px
+      width: 200px
       pointer-events: none
       margin-left: 8px
       opacity: 0

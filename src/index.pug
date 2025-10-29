@@ -6,7 +6,7 @@
     ['{{sfx}}', '{{soundStatus}}'],
     ['{{theme}}', 'Toggle theme'],
     ['{{zenMode}}', '{{zenStatus}}'],
-    ['lock', 'Encryption'],
+    ['{{lock}}', '{{lockdesc}}'],
     ['info', 'About'],
   ]
 doctype html
@@ -26,6 +26,8 @@ html(lang="en")
     script(src="encrypter.js")
   body#app: div(z-class="theme {{themeName}}")
     .app
+      div(z-class="savingIndicator {{savingStatus}}")
+        span.icon.material-icons-outlined save
       div(z-class="sidebar {{writing}}")
         ul
           for item in menuItems
