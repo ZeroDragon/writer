@@ -38,7 +38,7 @@ html(lang="en")
                 span.icon.material-icons-outlined=item[0]
                 span.label=item[1]
       .content#content(
-        contentEditable="true"
+        z-contentEditable="!isEncrypted"
         z:keyDown="createSound"
         z:keyUp="updateContent"
         z:click="tryZenMode"

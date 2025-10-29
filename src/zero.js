@@ -103,6 +103,20 @@ class Zero { // eslint-disable-line no-unused-vars
       const model = el.getAttribute('z-model')
       let show = el.getAttribute('z-if')
       const klass = el.getAttribute('z-class')
+      const attrs = el.getAttributeNames()
+      attrs.forEach(attr => {
+        if (attr.startsWith('z-') && !['z-model', 'z-if', 'z-class'].includes(attr)) {
+          const key = el.getAttribute(attr)
+          const lookUpKey = key.startsWith('!') ? key.slice(1) : key
+          const attrName = attr.slice(2)
+          const value = this.getValue(lookUpKey)
+          if (key.startsWith('!')) {
+            el.setAttribute(attrName, !value)
+          } else {
+            el.setAttribute(attrName, value)
+          }
+        }
+      })
       if (show) {
         // check if show has bang at start
         const isNegated = show.startsWith('!')

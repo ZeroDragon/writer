@@ -28,6 +28,7 @@ const app = new Zero('app', {
     zenStatus: 'Zen Mode OFF',
     lock: 'lock_open_right',
     lockdesc: 'Encryption OFF',
+    isEncrypted: false,
     timerIsRunning: false,
     writeTimer: 0,
     wordGoal: '',
@@ -121,8 +122,9 @@ const app = new Zero('app', {
   methods: {
     setContentFont: () => {
       const contentEl = document.getElementById('content')
-      const isEncrypted = app.methods.textIsEncrypted()
-      if (isEncrypted) {
+      app.data.isEncrypted = app.methods.textIsEncrypted()
+      app.updateDom(['isEncrypted'])
+      if (app.data.isEncrypted) {
         // add class encrypted to contentEl
         contentEl.classList.add('encrypted')
       } else {
