@@ -1,4 +1,4 @@
-/* global Zero Node FileReader, encryptText, decryptText */
+/* global Zero, File Node, encryptText, decryptText */
 const setCursor = (element, position) => {
   const newRange = document.createRange()
   const sel = window.getSelection()
@@ -33,9 +33,10 @@ const app = new Zero('app', {
     writeTimer: 0,
     wordGoal: '',
     lastWordCount: 0,
-    fontSize: 1
+    fileSystemAccessAPISupported: 'showOpenFilePicker' in window
   },
   preload: async (instance) => {
+    instance.file = new File(instance)
     async function loadSound (url) {
       const response = await fetch(url)
       const arrayBuffer = await response.arrayBuffer()
@@ -153,6 +154,8 @@ const app = new Zero('app', {
       await app.methods.saveWriterData()
       app.methods.closeModal()
       app.updateDom()
+      app.methods.setContentFont()
+      app.file.close()
     },
     '{{theme}}': () => {
       if (app.data.themeName === 'dark') {
@@ -206,40 +209,10 @@ const app = new Zero('app', {
       app.updateDom()
     },
     save: async () => {
-      const encryptedText = await app.methods.encryptText()
-      const blob = new Blob([encryptedText], { type: 'application/octet-stream' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = 'draft.wtr'
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
+      await app.file.write()
     },
-    upload_file: () => {
-      const input = document.createElement('input')
-      input.type = 'file'
-      const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-      if (isiOS) {
-        input.accept = 'text/*,.wtr,application/octet-stream'
-      } else {
-        input.accept = '.txt,.wtr,text/plain'
-      }
-      input.onchange = e => {
-        const file = e.target.files[0]
-        if (!file) return
-        const reader = new FileReader()
-        reader.onload = event => {
-          app.data.content = event.target.result
-          app.methods.setContentFont()
-          app.data.wordCount = app.methods.countWords(app.data.content)
-          app.methods.saveWriterData()
-          app.updateDom()
-        }
-        reader.readAsText(file)
-      }
-      input.click()
+    upload_file: async () => {
+      await app.file.open()
     },
     info: () => {
       app.data.modal = {
@@ -354,22 +327,6 @@ const app = new Zero('app', {
     },
     format_paragraph: () => {
       app.methods.format_text('div')
-    },
-    updateFontSize: () => {
-      const contentEl = document.getElementById('content')
-      contentEl.style.fontSize = `${app.data.fontSize}em`
-    },
-    zoom_in: () => {
-      app.data.fontSize = Math.min(app.data.fontSize + 0.1, 3)
-      app.methods.updateFontSize()
-    },
-    zoom_out: () => {
-      app.data.fontSize = Math.max(app.data.fontSize - 0.1, 0.5)
-      app.methods.updateFontSize()
-    },
-    search_check: () => {
-      app.data.fontSize = 1
-      app.methods.updateFontSize()
     },
     tryZenMode: (e) => {
       if (app.data.content.trim() === 'Start writing...') {
@@ -569,6 +526,13 @@ document.addEventListener('keyup', (e) => {
     app.methods.closeModal()
   }
 })
+document.addEventListener('keydown', (e) => {
+  // if user press ctrl/cmd + s, prevent default and save
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault()
+    app.methods.save()
+  }
+})
 // enable drag and drop file upload
 document.addEventListener('dragover', (e) => {
   e.preventDefault()
@@ -589,17 +553,7 @@ document.addEventListener('dragleave', (e) => {
 })
 document.addEventListener('drop', (e) => {
   e.preventDefault()
-  const file = e.dataTransfer.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = event => {
-    app.data.content = event.target.result
-    app.data.wordCount = app.methods.countWords(app.data.content)
-    app.methods.setContentFont()
-    app.methods.saveWriterData()
-    app.updateDom()
-  }
-  reader.readAsText(file)
+  app.file.openDragged(e)
   document.getElementById('dragOverlay').classList.remove('active')
 })
 document.addEventListener('mousemove', (e) => {

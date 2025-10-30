@@ -6,6 +6,7 @@ const urlsToCache = [
   'app.js',
   'encrypter.js',
   'registerSW.js',
+  'file-api.js',
   'zero.js',
   'index.html',
   // assets

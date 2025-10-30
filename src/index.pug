@@ -1,8 +1,8 @@
 -
   const menuItems = [
-    ['article', 'New Draft'],
+    ['article', 'New'],
     ['save', 'Save'],
-    ['upload_file', 'Open Draft'],
+    ['upload_file', 'Open'],
     ['{{sfx}}', '{{soundStatus}}'],
     ['{{theme}}', 'Toggle theme'],
     ['{{zenMode}}', '{{zenStatus}}'],
@@ -22,6 +22,7 @@ html(lang="en")
     link(rel="manifest" href="assets/site.webmanifest")
     link(rel="stylesheet" href="app.css")
     script(src="registerSW.js")
+    script(src="file-api.js")
     script(src="zero.js")
     script(src="encrypter.js")
   body#app: div(z-class="theme {{themeName}}")
@@ -70,7 +71,7 @@ html(lang="en")
         span(z-if="timerIsRunning" z:click="resetTimeGoal")
           .icon.material-icons-outlined timer_off
       div(z-class="toolBar {{writing}}")
-        for cmd in ['format_h1', 'format_h2', 'format_paragraph','format_align_left', 'format_align_center', 'format_align_right', 'format_align_justify', 'zoom_in', 'zoom_out', 'search_check']
+        for cmd in ['format_h1', 'format_h2', 'format_paragraph','format_align_left', 'format_align_center', 'format_align_right', 'format_align_justify']
           button.toolButton(
             z:click=`${cmd}`
           )
@@ -95,6 +96,8 @@ html(lang="en")
         li This app is served as is, and while efforts are made to ensure data integrity, always keep backups of your important drafts.
         li All data is stored locally in your browser and on your device.
         li No data is sent to any server unless you explicitly choose to back up or share your drafts.
+        li(z-if="!fileSystemAccessAPISupported").
+          To use better interactive saving methods, enable File System Access API on<br/>chrome://flags/#file-system-access-api
         li(style="text-align: right;").
           Made with ♥ by Zero.
     #encrypt(z-if="false")
