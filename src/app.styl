@@ -130,11 +130,14 @@ a
   &::selection
     background: var(--accent)
     color: var(--buttonForeground)
-  // disable scrollbars
+  // style scrollbars
+  &::-webkit-scrollbar-track
+    background: transparent
   &::-webkit-scrollbar
-    display: none
-  -ms-overflow-style: none
-  scrollbar-width: none
+    width: 8px
+  &::-webkit-scrollbar-thumb
+    background: var(--lighter-background)
+    border-radius: 4px
   &.encrypted
     font-family: "Robotofus", monospace
     color: var(--accent)
