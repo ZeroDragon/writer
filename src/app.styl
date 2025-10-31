@@ -5,6 +5,7 @@
 body
   margin: 0
   padding: 0
+  font-family: "Roboto Mono", monospace
 
 .theme.light
   // --background: #fdf6e3
@@ -30,7 +31,6 @@ body
   --buttonForeground: #ffffff
 
 .theme
-  font-family: "Roboto Mono", monospace
   font-size: 16px
   background-color: var(--app-background)
   color: var(--foreground)
@@ -116,6 +116,7 @@ a
       margin-left: 8px
       opacity: 0
       transition: opacity 0.2s ease-in-out
+      z-index: 6
 
 /* main content area */
 .content
@@ -139,9 +140,32 @@ a
     background: var(--lighter-background)
     border-radius: 4px
   &.encrypted
-    font-family: "Robotofus", monospace
     color: var(--accent)
-    word-wrap: break-word
+    word-break: break-word
+    pointer-events: none
+    user-select: none
+    position: relative
+    &:before
+      content: ""
+      position: absolute
+      top: 0
+      left: 0
+      width: 100%
+      height: 100%
+      background-color: var(--app-background)
+      opacity: 0.7
+      z-index: 5
+    &:after
+      font-family: "Material Icons Outlined"
+      content: "lock"
+      font-size: 30vh
+      position: absolute
+      top: 50%
+      left: 50%
+      z-index: 5
+      color: var(--accent)
+      opacity: 0.4
+      transform: translate(-50%, -50%)
   &.dimmed
     & > *
       opacity: 0.2
@@ -171,7 +195,6 @@ a
 
 input
   background-color: transparent
-  font-family: "Roboto Mono", monospace
   border: none
   color: var(--foreground)
   padding: 4px 8px
@@ -317,7 +340,6 @@ input
     display: flex
   .drag-text
     opacity: 0.5
-    font-family: "Roboto Mono", monospace
     color: var(--foreground)
     font-size: 24px
     font-weight: bold
