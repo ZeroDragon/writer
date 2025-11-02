@@ -3,9 +3,9 @@ Writeros
 A simple write space without distractions or assistants
 
 ## To Do
-- Auto hide unused stats on footer
 
 ## Done
+- Auto hide unused stats on footer
 - Fix a problem when selecting no-item transforms the whole content editable
 - Disable sounds on non-typewriter classic keys
 - Add top used words with count

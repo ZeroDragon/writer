@@ -65,30 +65,31 @@ html(lang="en")
         z-model="content"
       )
       .footer
-        span words:&nbsp;
+        span(z-class="{{writing}}") words:&nbsp;
         span {{ wordCount }}
-        span &nbsp;of&nbsp;
-        input.wordset(
-          z-model="goal"
-          placeholder="Goal"
-          name="wordGoal"
-          z:blur="setWordGoal"
-          autoComplete="off"
-        )
-        span &nbsp;-&nbsp;
-        span(z:click="incrementTimeLeft")
-          .icon.material-icons-outlined more_time
-        input.timeset(
-          z-model="timeGoal"
-          placeholder="hh:mm:ss"
-          z:blur="setTimeGoal"
-          z:focus="startEditingTimeGoal"
-          z:tick="tickTimeGoal"
-          name="timeGoal"
-          autoComplete="off"
-        )
-        span(z-if="timerIsRunning" z:click="resetTimeGoal")
-          .icon.material-icons-outlined timer_off
+        div(z-class="{{writing}}")
+          span &nbsp;of&nbsp;
+          input.wordset(
+            z-model="goal"
+            placeholder="Goal"
+            name="wordGoal"
+            z:blur="setWordGoal"
+            autoComplete="off"
+          )
+          span &nbsp;-&nbsp;
+          span(z:click="incrementTimeLeft")
+            .icon.material-icons-outlined more_time
+          input.timeset(
+            z-model="timeGoal"
+            placeholder="hh:mm:ss"
+            z:blur="setTimeGoal"
+            z:focus="startEditingTimeGoal"
+            z:tick="tickTimeGoal"
+            name="timeGoal"
+            autoComplete="off"
+          )
+          span(z-if="timerIsRunning" z:click="resetTimeGoal")
+            .icon.material-icons-outlined timer_off
       div(z-class="toolBar {{writing}}")
         for cmd in ['format_h1', 'format_h2', 'format_paragraph','format_align_left', 'format_align_center', 'format_align_right', 'format_align_justify']
           button.toolButton(
