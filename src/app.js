@@ -289,16 +289,20 @@ const app = new Zero('app', {
     },
     getSelectionParent: (returnParent = false) => {
       let parentElement = null
+      const contentEl = document.getElementById('content')
       const selection = window.getSelection()
       if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0)
         parentElement = range.startContainer.parentElement
       }
-      if (returnParent) return parentElement
+      if (returnParent) {
+        if (parentElement === contentEl) return null
+        return parentElement
+      }
+      if (parentElement === contentEl) return () => {}
       return (align) => {
         parentElement.style.textAlign = align
         setCursor(parentElement.firstChild, parentElement.firstChild.length)
-        const contentEl = document.getElementById('content')
         app.data.content = contentEl.innerHTML
         app.methods.saveWriterData()
       }
@@ -317,6 +321,7 @@ const app = new Zero('app', {
     },
     format_text: (node) => {
       const parent = app.methods.getSelectionParent(true)
+      if (!parent) return
       const newElement = document.createElement(node)
       newElement.innerHTML = parent.innerHTML
       parent.replaceWith(newElement)

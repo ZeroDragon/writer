@@ -3,10 +3,10 @@ Writeros
 A simple write space without distractions or assistants
 
 ## To Do
-- Fix a problem when selecting no-item transforms the whole content editable
 - Auto hide unused stats on footer
 
 ## Done
+- Fix a problem when selecting no-item transforms the whole content editable
 - Disable sounds on non-typewriter classic keys
 - Add top used words with count
 - Add lecure time
