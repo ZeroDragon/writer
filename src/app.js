@@ -273,6 +273,7 @@ const app = new Zero('app', {
         // set cursor to end of div
         setCursor(div, 1)
       }
+      if (app.data.content === e.target.innerHTML) return
       app.data.content = e.target.innerHTML
       app.methods.tryAutoSave()
       app.data.wordCount = app.methods.countWords(app.data.content)
