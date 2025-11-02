@@ -40,14 +40,18 @@ body
 .app
   min-height: 100vh
   display: grid
-  grid-template-columns: 1fr 50px
-  grid-template-rows: 1fr 50px
+  grid-template-columns: 1fr 40px
+  grid-template-rows: 1fr 40px
   grid-template-areas:\
     "content sidebar"\
     "footer footer"
   gap: 0
   padding: 0
   transition: grid-template-columns 0.3s ease-in-out
+  &.hiddenSidebar
+    grid-template-columns: 1fr 0px
+    .sidebar
+      overflow: hidden
   &.expandedSidebar
     grid-template-columns: 1fr 250px
     .analyticsDisplay
@@ -108,7 +112,6 @@ a
 .sidebar
   font-weight: 300
   grid-area: sidebar
-  padding: 4px
   min-height: 0
   overflow: hidden
   opacity: 1
@@ -240,6 +243,15 @@ input, textarea
   &:focus
     outline: none
     box-shadow: 0 0 5px var(--accent)
+textarea
+  &::-webkit-scrollbar-track
+    background: transparent
+  &::-webkit-scrollbar
+    width: 8px
+  &::-webkit-scrollbar-thumb
+    background: var(--lighter-background)
+    border-radius: 4px
+  resize: none
 
 .modal
   position: fixed

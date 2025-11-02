@@ -140,7 +140,8 @@ class Zero { // eslint-disable-line no-unused-vars
           .split(' ')
           .map(c => c.trim())
           .map(c => {
-            const [,, key] = regex.exec(c) || []
+            const [, , key] = regex.exec(c) || []
+            regex.lastIndex = 0
             return key ? this.getValue(key) : c
           })
           .filter(c => c)

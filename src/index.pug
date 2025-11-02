@@ -27,10 +27,10 @@ html(lang="en")
     script(src="zero.js")
     script(src="encrypter.js")
   body#app: div(z-class="theme {{themeName}}")
-    div(z-class="app {{expandedSidebar}}")
+    div(z-class="app {{expandedSidebar}} {{hiddenSidebar}}")
       div(z-class="savingIndicator {{savingStatus}}")
         span.icon.material-icons-outlined save
-      div(z-class="sidebar {{writing}}")
+      div(z-class="sidebar")
         ul
           for item in menuItems
             if item[0] === 'spacer'

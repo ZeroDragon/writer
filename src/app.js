@@ -284,7 +284,8 @@ const app = new Zero('app', {
       }
       app.data.writing = 'writing'
       app.data.expandedSidebar = ''
-      app.updateDom(['wordCount', 'writing', 'expandedSidebar'])
+      app.data.hiddenSidebar = 'hiddenSidebar'
+      app.updateDom(['wordCount', 'writing', 'expandedSidebar', 'hiddenSidebar'])
       app.methods.tryZenMode(e)
     },
     getSelectionParent: (returnParent = false) => {
@@ -641,5 +642,6 @@ document.addEventListener('drop', (e) => {
 document.addEventListener('mousemove', (e) => {
   if (!app.data.writing) return
   delete app.data.writing
-  app.updateDom(['writing'])
+  delete app.data.hiddenSidebar
+  app.updateDom(['writing', 'hiddenSidebar'])
 })
