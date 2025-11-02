@@ -46,7 +46,37 @@ body
     "footer footer"
   gap: 0
   padding: 0
-
+  transition: grid-template-columns 0.3s ease-in-out
+  &.expandedSidebar
+    grid-template-columns: 1fr 250px
+    .analyticsDisplay
+      font-size: 0.8em
+      display: block
+    .sidebar
+      padding-top: 30px
+    textarea
+      width: 100%
+      text-align: left
+      height: 100px
+    table
+      width: 100%
+      tr
+        cursor: default
+        &:hover
+          background-color: var(--darker-background)
+      th, td
+        padding: 0
+        text-align: left
+    ul
+      display: flex
+      flex-wrap: wrap
+    .item
+      padding: 10px
+      .label
+        top: 10px
+        right: -15px
+        width: 250px
+        text-align: left
 a
   color: var(--accent)
   text-decoration: none
@@ -83,6 +113,9 @@ a
   opacity: 1
   transition: opacity 0.3s ease-in-out
 
+  .analyticsDisplay
+    display: none
+
   &.writing
     opacity: 0
 
@@ -94,8 +127,6 @@ a
     width: 42px
     position: relative
   .item
-    display: flex
-    align-items: center
     padding: 10px 8px
     border-radius: 4px
     z-index: 10
@@ -109,7 +140,7 @@ a
     .label
       font-size: 14px
       position: fixed
-      right: 60px
+      right: 50px
       text-align: right
       width: 100px
       pointer-events: none
@@ -193,7 +224,7 @@ a
     &.timeset
       width: 80px
 
-input
+input, textarea
   background-color: transparent
   border: none
   color: var(--foreground)
@@ -349,25 +380,5 @@ input
 
 /* responsive: stack on small screens */
 @media (max-width: 768px)
-  .app
-    grid-template-columns: 1fr
-    grid-template-rows: 50px 1fr auto
-    grid-template-areas:\
-      "sidebar"\
-      "content"\
-      "footer"
-
   .content
     padding: 20px
-
-  .sidebar
-    ul
-      display: flex
-      flex-direction: row
-      justify-content: center
-      li .item .label
-        top: 50px
-        left: 50%
-        transform: translateX(-50%)
-        text-align: center
-        width: 200px

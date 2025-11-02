@@ -11,8 +11,10 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 // get saved data from localStorage
 const getLS = () => {
   const savedData = window.localStorage.getItem('writerAppData')
-  const { soundOn, themeName, zenOn } = JSON.parse(window.localStorage.getItem('writerAppSettings')) || {}
-  return { savedData, soundOn, themeName, zenOn }
+  const { soundOn, themeName, zenOn, ignoredWords } = JSON.parse(
+    window.localStorage.getItem('writerAppSettings')
+  ) || {}
+  return { savedData, soundOn, themeName, zenOn, ignoredWords }
 }
 const app = new Zero('app', {
   data: {
@@ -29,6 +31,7 @@ const app = new Zero('app', {
     lock: 'lock_open_right',
     lockdesc: 'Encryption OFF',
     isEncrypted: false,
+    ignoredWords: getLS().ignoredWords || '',
     timerIsRunning: false,
     writeTimer: 0,
     wordGoal: '',
@@ -145,7 +148,8 @@ const app = new Zero('app', {
       window.localStorage.setItem('writerAppSettings', JSON.stringify({
         soundOn: app.data.soundOn,
         themeName: app.data.themeName,
-        zenOn: app.data.zenOn
+        zenOn: app.data.zenOn,
+        ignoredWords: app.data.ignoredWords
       }))
     },
     newDraft: async () => {
@@ -278,7 +282,8 @@ const app = new Zero('app', {
         app.data.lastWordCount = app.data.wordCount
       }
       app.data.writing = 'writing'
-      app.updateDom(['wordCount', 'writing'])
+      app.data.expandedSidebar = ''
+      app.updateDom(['wordCount', 'writing', 'expandedSidebar'])
       app.methods.tryZenMode(e)
     },
     getSelectionParent: (returnParent = false) => {
@@ -518,6 +523,77 @@ const app = new Zero('app', {
       await app.methods.saveWriterData()
       app.methods.closeModal()
       app.updateDom(['content', 'wordCount', '{{lock}}'])
+    },
+    analytics: () => {
+      app.data.expandedSidebar = app.data.expandedSidebar ? '' : 'expandedSidebar'
+      if (app.data.expandedSidebar) app.methods.runAnalytics()
+      app.updateDom(['expandedSidebar'])
+    },
+    updateIgnoredWords: (e) => {
+      const value = e.target.value
+      app.data.ignoredWords = value
+        .replace(/[\n,]+/g, ' ')
+        .split(/\s+/)
+        .map(word => word.toLowerCase())
+        .filter(Boolean)
+      app.methods.runAnalytics()
+      app.methods.saveSettings()
+      app.updateDom(['ignoredWords'])
+    },
+    runAnalytics: async () => {
+      const contentEl = document.getElementById('content')
+      const words = contentEl.innerText.split(/\s+/).filter(Boolean)
+      const frequency = {}
+      words.forEach(word => {
+        const lowerWord = word.toLowerCase()
+        frequency[lowerWord] = (frequency[lowerWord] || 0) + 1
+      })
+      const table = document.createElement('table')
+      const header = document.createElement('tr')
+      header.innerHTML = `
+        <th></th>
+        <th>Word</th>
+        <th>Count</th>
+        <th>Freq</th>
+      `
+      table.appendChild(header)
+      Object.entries(frequency)
+        .filter(([word]) => !app.data.ignoredWords?.includes(word))
+        .sort((a, b) => b[1] - a[1])
+        .map(([word, count]) => {
+          const percent = ((count / words.length) * 100).toFixed(2)
+          return { word, count, percent }
+        })
+        .slice(0, 20)
+        .forEach(({ word, count, percent }, i) => {
+          // create a table row DOM for each word
+          const row = document.createElement('tr')
+          row.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${word}</td>
+            <td>${count}</td>
+            <td>${percent}%</td>
+          `
+          table.appendChild(row)
+        })
+      app.data.analytics = table.outerHTML
+      app.data.lectureTime = (app.data.wordCount / 130).toFixed(1) + ' minutes'
+      await app.updateDom(['analytics', 'lectureTime']) // await to ensure DOM is updated
+      const trs = document.querySelectorAll('#analytics table tr')
+      trs.forEach((tr) => {
+        tr.addEventListener('click', () => {
+          const word = tr.children[1].innerText
+          // add word to ignoredWords
+          if (!app.data.ignoredWords.includes(word)) {
+            app.data.ignoredWords.push(word)
+            app.methods.updateIgnoredWords({
+              target: {
+                value: app.data.ignoredWords.join('\n')
+              }
+            })
+          }
+        })
+      })
     }
   }
 })

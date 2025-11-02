@@ -3,9 +3,13 @@ Writeros
 A simple write space without distractions or assistants
 
 ## To Do
-- Add usage helper
+- Disable sounds on non-typewriter classic keys
+- Fix a problem when selecting no-item transforms the whole content editable
+- Auto hide unused stats on footer
 
 ## Done
+- Add top used words with count
+- Add lecure time
 - Create native app for desktop (using PWA works just fine)
 - Improve lock mechanism to display current value
 - Add welcome splash
@@ -36,4 +40,5 @@ A simple write space without distractions or assistants
 - Persist theme and sfx configurations
 
 ## Maybe do
+- Create a video showcasing all options and usage (wait for first stable release)
 - Create native app for devices (using PWA works kinda fine on IOS... sound works when iPad wants)

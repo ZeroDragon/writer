@@ -1,5 +1,6 @@
 -
   const menuItems = [
+    ['info', 'About'],
     ['article', 'New'],
     ['save', 'Save'],
     ['upload_file', 'Open'],
@@ -7,7 +8,7 @@
     ['{{theme}}', 'Toggle theme'],
     ['{{zenMode}}', '{{zenStatus}}'],
     ['{{lock}}', '{{lockdesc}}'],
-    ['info', 'About'],
+    ['analytics', 'Analytics'],
   ]
 doctype html
 html(lang="en")
@@ -26,7 +27,7 @@ html(lang="en")
     script(src="zero.js")
     script(src="encrypter.js")
   body#app: div(z-class="theme {{themeName}}")
-    .app
+    div(z-class="app {{expandedSidebar}}")
       div(z-class="savingIndicator {{savingStatus}}")
         span.icon.material-icons-outlined save
       div(z-class="sidebar {{writing}}")
@@ -35,9 +36,27 @@ html(lang="en")
             if item[0] === 'spacer'
               li: .item
             else
-              li: .item(z:click=`${item[0]}`)
+              li(class=`${item[0]}`): .item(z:click=`${item[0]}`)
                 span.icon.material-icons-outlined=item[0]
                 span.label=item[1]
+        .analyticsDisplay
+          .lectureTime
+            |Lecture time:&nbsp;
+            span {{ lectureTime }}
+          div
+            br
+            b Word Stats
+            br
+          div#analytics {{!analytics}}
+          div
+            br
+            b Ignored words
+            br
+          textarea.ignore(
+            z-model="ignoredWords"
+            placeholder="Ignored words"
+            z:blur="updateIgnoredWords"
+          )
       .content#content(
         z-contentEditable="!isEncrypted"
         z:keyDown="createSound"
