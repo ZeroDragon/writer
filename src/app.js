@@ -89,6 +89,7 @@ const app = new Zero('app', {
             return instance.data.soundsMap.keys[soundIndex]
           }
         }
+        if (e.key.startsWith('Arrow') || ['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return null
         return 'space'
       }
       if (getSound()) {
@@ -238,7 +239,7 @@ const app = new Zero('app', {
       // use a sound from soundsMap based on key pressed
       if (app.data.soundOn) {
         if (!app.data.lastKeyTime) app.data.lastKeyTime = 0
-        if (app.data.lastKeyTime + 500 > new Date().getTime() && app.data.lastKey === e.key) return
+        if (app.data.lastKeyTime + 200 > new Date().getTime() && app.data.lastKey === e.key) return
         app.soundName(e)
         app.data.lastKeyTime = new Date().getTime()
         app.data.lastKey = e.key
