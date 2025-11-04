@@ -1,1 +1,183 @@
-class File{constructor(e){this.app=e,this.getFileHandle()}guardFileHandle(){return!!this.fileHandle||(window.alert("No file is currently opened."),!1)}apiGuard(){return!(!window.showOpenFilePicker||!window.showSaveFilePicker)}async setFileHandle(e){this.fileHandle=e;let t=indexedDB.open("WriterDB",1);t.onupgradeneeded=()=>{var e=t.result;e.objectStoreNames.contains("fileHandles")||e.createObjectStore("fileHandles")},t.onsuccess=()=>{t.result.transaction(["fileHandles"],"readwrite").objectStore("fileHandles").put(e,"myFileHandle").onerror=e=>{console.error("Error storing file handle:",e.target.error)}},t.onerror=e=>{console.error("Error opening IndexedDB:",e.target.error)}}async getFileHandle(){let e=indexedDB.open("WriterDB",1);e.onsuccess=async()=>{var t=e.result;if(t.objectStoreNames.contains("fileHandles")){let e=t.transaction(["fileHandles"],"readonly").objectStore("fileHandles").get("myFileHandle");e.onsuccess=()=>{this.fileHandle=e.result||null}}else this.fileHandle=null}}async open(e){if(!this.apiGuard())return this.openLegacy();e||([e]=await window.showOpenFilePicker(),this.setFileHandle(e)),this.guardFileHandle()&&(e=await this.fileHandle.getFile(),this.updateApp(await e.text()))}openLegacy(){var e=document.createElement("input"),t=(e.type="file",/iPad|iPhone|iPod/.test(navigator.userAgent)||"MacIntel"===navigator.platform&&1<navigator.maxTouchPoints);e.accept=t?"text/*,.wtr,application/octet-stream":".txt,.wtr,text/plain",e.onchange=e=>{var t,e=e.target.files[0];e&&((t=new FileReader).onload=e=>{this.updateApp(e.target.result)},t.readAsText(e))},e.click()}async openDragged(e){if(!this.apiGuard())return this.openLegacyDragged(e);e=e.dataTransfer.items[0];e&&(await this.setFileHandle(await e.getAsFileSystemHandle()),this.open(!0))}openLegacyDragged(e){var t,e=e.dataTransfer.files[0];e&&((t=new FileReader).onload=e=>{this.updateApp(e.target.result)},t.readAsText(e))}updateApp(e){this.app.data.content=e,this.app.methods.setContentFont(),this.app.data.wordCount=this.app.methods.countWords(this.app.data.content),this.app.methods.saveWriterData(),this.app.updateDom()}async write(){var e=await this.app.methods.encryptText();if(!this.apiGuard())return this.writeLegacy(e);if(!this.fileHandle)return this.saveAs(e);this.app.data.savingStatus="saving",this.app.updateDom(["savingStatus"]);var t=await this.fileHandle.createWritable();await t.write(e),await t.close(),setTimeout(()=>{this.app.data.savingStatus="",this.app.updateDom(["savingStatus"])},500)}async writeLegacy(e){var e=new Blob([e],{type:"application/octet-stream"}),e=URL.createObjectURL(e),t=document.createElement("a");t.href=e,t.download="draft.wtr",document.body.appendChild(t),t.click(),document.body.removeChild(t),URL.revokeObjectURL(e)}async saveAs(e){var t=await window.showSaveFilePicker({suggestedName:"My Draft.wtr",types:[{description:"Writeros Draft",accept:{"text/octet-stream":[".wtr"]}}]});this.setFileHandle(t),await this.write(e)}close(){this.fileHandle=null;let t=indexedDB.open("WriterDB",1);t.onsuccess=()=>{var e=t.result;e.objectStoreNames.contains("fileHandles")&&(e.transaction(["fileHandles"],"readwrite").objectStore("fileHandles").delete("myFileHandle").onerror=e=>{console.error("Error deleting file handle:",e.target.error)})},t.onerror=e=>{console.error("Error opening IndexedDB:",e.target.error)}}}
+/* global FileReader, indexedDB */
+// eslint-disable-next-line
+class File {
+  constructor (app) {
+    this.app = app
+    this.getFileHandle()
+  }
+
+  guardFileHandle () {
+    if (!this.fileHandle) {
+      window.alert('No file is currently opened.')
+      return false
+    }
+    return true
+  }
+
+  apiGuard () {
+    if (!window.showOpenFilePicker || !window.showSaveFilePicker) {
+      return false
+    }
+    return true
+  }
+
+  async setFileHandle (fileHandle) {
+    this.fileHandle = fileHandle
+    const request = indexedDB.open('WriterDB', 1)
+    request.onupgradeneeded = () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains('fileHandles')) {
+        db.createObjectStore('fileHandles')
+      }
+    }
+    request.onsuccess = () => {
+      const db = request.result
+      const transaction = db.transaction(['fileHandles'], 'readwrite')
+      const store = transaction.objectStore('fileHandles')
+      const putRequest = store.put(fileHandle, 'myFileHandle')
+      putRequest.onerror = (event) => {
+        console.error('Error storing file handle:', event.target.error)
+      }
+    }
+    request.onerror = (event) => {
+      console.error('Error opening IndexedDB:', event.target.error)
+    }
+  }
+
+  async getFileHandle () {
+    // get file handle from IndexedDB
+    const request = indexedDB.open('WriterDB', 1)
+    request.onsuccess = async () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains('fileHandles')) {
+        this.fileHandle = null
+        return
+      }
+      const transaction = db.transaction(['fileHandles'], 'readonly')
+      const store = transaction.objectStore('fileHandles')
+      const getRequest = store.get('myFileHandle')
+      getRequest.onsuccess = () => {
+        this.fileHandle = getRequest.result || null
+      }
+    }
+  }
+
+  async open (override) {
+    if (!this.apiGuard()) return this.openLegacy()
+    if (!override) {
+      const [fileHandle] = await window.showOpenFilePicker()
+      this.setFileHandle(fileHandle)
+    }
+    if (!this.guardFileHandle()) return
+    const file = await this.fileHandle.getFile()
+    this.updateApp(await file.text())
+  }
+
+  openLegacy () {
+    const input = document.createElement('input')
+    input.type = 'file'
+    const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    if (isiOS) {
+      input.accept = 'text/*,.wtr,application/octet-stream'
+    } else {
+      input.accept = '.txt,.wtr,text/plain'
+    }
+    input.onchange = e => {
+      const file = e.target.files[0]
+      if (!file) return
+      const reader = new FileReader()
+      reader.onload = event => {
+        this.updateApp(event.target.result)
+      }
+      reader.readAsText(file)
+    }
+    input.click()
+  }
+
+  async openDragged (e) {
+    if (!this.apiGuard()) return this.openLegacyDragged(e)
+    const file = e.dataTransfer.items[0]
+    if (!file) return
+    await this.setFileHandle(await file.getAsFileSystemHandle())
+    this.open(true)
+  }
+
+  openLegacyDragged (e) {
+    const file = e.dataTransfer.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = event => {
+      this.updateApp(event.target.result)
+    }
+    reader.readAsText(file)
+  }
+
+  updateApp (content) {
+    this.app.data.content = content
+    this.app.methods.setContentFont()
+    this.app.data.wordCount = this.app.methods.countWords(this.app.data.content)
+    this.app.methods.saveWriterData()
+    this.app.updateDom()
+  }
+
+  async write () {
+    const encryptedText = await this.app.methods.encryptText()
+    if (!this.apiGuard()) return this.writeLegacy(encryptedText)
+    if (!this.fileHandle) return this.saveAs(encryptedText)
+    this.app.data.savingStatus = 'saving'
+    this.app.updateDom(['savingStatus'])
+    const writable = await this.fileHandle.createWritable()
+    await writable.write(encryptedText)
+    await writable.close()
+    setTimeout(() => {
+      this.app.data.savingStatus = ''
+      this.app.updateDom(['savingStatus'])
+    }, 500)
+  }
+
+  async writeLegacy (encryptedText) {
+    const blob = new Blob([encryptedText], { type: 'application/octet-stream' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'draft.wtr'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
+  }
+
+  async saveAs (contents) {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: 'My Draft.wtr',
+      types: [{
+        description: 'Writeros Draft',
+        accept: {
+          'text/octet-stream': ['.wtr']
+        }
+      }]
+    })
+    this.setFileHandle(fileHandle)
+    await this.write(contents)
+  }
+
+  close () {
+    this.fileHandle = null
+    const request = indexedDB.open('WriterDB', 1)
+    request.onsuccess = () => {
+      const db = request.result
+      if (!db.objectStoreNames.contains('fileHandles')) {
+        return
+      }
+      const transaction = db.transaction(['fileHandles'], 'readwrite')
+      const store = transaction.objectStore('fileHandles')
+      const deleteRequest = store.delete('myFileHandle')
+      deleteRequest.onerror = (event) => {
+        console.error('Error deleting file handle:', event.target.error)
+      }
+    }
+    request.onerror = (event) => {
+      console.error('Error opening IndexedDB:', event.target.error)
+    }
+  }
+}

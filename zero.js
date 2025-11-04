@@ -1,1 +1,152 @@
-class Zero{constructor(t,e={}){this.element=document.getElementById(t),this.methods=e.methods||{},this.data=e.data||{},this.getInvolvedElements(),this.setTrackedDisplayItems(),this.bindEvents(),this.updateDom(),e.preload&&e.preload(this)}getInvolvedElements(){var t=[...this.element.querySelectorAll("*")];this.reactiveElements=t.filter(t=>[...t.attributes].some(t=>t.name.startsWith("z-"))),this.triggers=t.filter(t=>[...t.attributes].some(t=>t.name.startsWith("z:")))}bindEvents(){this.triggers.forEach(i=>{[...i.attributes].forEach(t=>{if(t.name.startsWith("z:")){var[,e]=t.name.split(":"),t=t.value,t=this.getValue(t)||t;if(this.methods[t]){for(var s in i._listeners=i._listeners||{},i._listeners)s===e&&i.removeEventListener(s,i._listeners[s]);i._listeners[e]=this.methods[t],i.addEventListener(e,this.methods[t])}}})})}getValue(e){if(e.includes(".")){var s,i=e.split(".");let t=this.data;for(s of i)t=t?.[s];return t}return this.data[e]}setTrackedDisplayItems(){this.trackedDisplays={};for(var t,e=[],s=document.createTreeWalker(this.element,NodeFilter.SHOW_ELEMENT);s.nextNode();)t=s.currentNode,e.push(t);e.forEach(t=>{var e,s=/{{\s*(!?)([\w.]+)\s*}}/g.exec(t.textContent);s&&(e=s[2],t.isWildcard=!!s[1],this.trackedDisplays[e]=t)})}updateDom(l=[]){Object.entries(this.trackedDisplays).forEach(([t,e])=>{t=this.getValue(t);void 0!==t&&(e.isWildcard?"string"!=typeof t?(e.innerHTML="",e.appendChild(t)):e.innerHTML=t:e.textContent=t)}),this.reactiveElements.forEach(i=>{var t=i.getAttribute("z-model");let e=i.getAttribute("z-if");var s,r=i.getAttribute("z-class");if(i.getAttributeNames().forEach(t=>{var e,s;t.startsWith("z-")&&!["z-model","z-if","z-class"].includes(t)&&(s=(e=i.getAttribute(t)).startsWith("!")?e.slice(1):e,t=t.slice(2),s=this.getValue(s),e.startsWith("!")?i.setAttribute(t,!s):i.setAttribute(t,s))}),e&&((a=e.startsWith("!"))&&(e=e.slice(1)),s=this.getValue(e),i.style.display=a?s?"none":"":s?"":"none"),t&&void 0!==this.data[t]){if(l.length&&!l.includes(t))return;if(!["INPUT","TEXTAREA","SELECT"].includes(i.tagName))return void(i.innerHTML=this.data[t]);i.value=this.data[t]}if(r){let s=/{{\s*(!?)([\w.]+)\s*}}/g;var a=r.split(" ").map(t=>t.trim()).map(t=>{var[,,e]=s.exec(t)||[];return s.lastIndex=0,e?this.getValue(e):t}).filter(t=>t);i.className=a.join(" ")}})}}
+/* global NodeFilter */
+class Zero { // eslint-disable-line no-unused-vars
+  constructor (element, options = {}) {
+    this.element = document.getElementById(element)
+    this.methods = options.methods || {}
+    this.data = options.data || {}
+    this.getInvolvedElements()
+    this.setTrackedDisplayItems()
+    this.bindEvents()
+    this.updateDom()
+    if (options.preload) options.preload(this)
+  }
+
+  getInvolvedElements () {
+    const allElements = [...this.element.querySelectorAll('*')]
+    this.reactiveElements = allElements
+      .filter(el => {
+        return [...el.attributes].some(attr => attr.name.startsWith('z-'))
+      })
+    this.triggers = allElements
+      .filter(el => {
+        return [...el.attributes].some(attr => attr.name.startsWith('z:'))
+      })
+  }
+
+  bindEvents () {
+    this.triggers.forEach(el => {
+      [...el.attributes].forEach(attr => {
+        if (attr.name.startsWith('z:')) {
+          const [, eventType] = attr.name.split(':')
+          const methodName = attr.value
+          const parsedMethod = this.getValue(methodName) || methodName
+          if (!this.methods[parsedMethod]) return
+          // delete event listener and add again
+          // get all event listeners of this type on this element and remove them
+          el._listeners = el._listeners || {}
+          for (const evt in el._listeners) {
+            if (evt === eventType) {
+              el.removeEventListener(evt, el._listeners[evt])
+            }
+          }
+          el._listeners[eventType] = this.methods[parsedMethod]
+          el.addEventListener(eventType, this.methods[parsedMethod])
+        }
+      })
+    })
+  }
+
+  getValue (key) {
+    if (key.includes('.')) {
+      const keys = key.split('.')
+      let value = this.data
+      for (const k of keys) {
+        value = value?.[k]
+      }
+      return value
+    }
+    return this.data[key]
+  }
+
+  setTrackedDisplayItems () {
+    // look for all elements inside this.element that include text like {{key}}
+    // and replace it with the value of this.data[key]
+    this.trackedDisplays = {}
+    const textNodes = []
+    const walk = document.createTreeWalker(this.element, NodeFilter.SHOW_ELEMENT)
+    let node
+    while (walk.nextNode()) {
+      node = walk.currentNode
+      textNodes.push(node)
+    }
+    // while (node = walk.nextNode()) textNodes.push(node)
+    textNodes.forEach(node => {
+      // regex to match {{ key }} with optional spaces and optional bang at start
+      const regex = /{{\s*(!?)([\w.]+)\s*}}/g
+      const match = regex.exec(node.textContent)
+      if (match) {
+        const key = match[2]
+        node.isWildcard = !!match[1]
+        this.trackedDisplays[key] = node
+      }
+    })
+  }
+
+  updateDom (updateOnly = []) {
+    // update all tracked display items
+    Object.entries(this.trackedDisplays).forEach(([key, textNode]) => {
+      const value = this.getValue(key)
+      if (value !== undefined) {
+        if (textNode.isWildcard) {
+          if (typeof value !== 'string') {
+            textNode.innerHTML = ''
+            textNode.appendChild(value)
+          } else {
+            textNode.innerHTML = value
+          }
+          return
+        }
+        textNode.textContent = value
+      }
+    })
+    this.reactiveElements.forEach(el => {
+      const model = el.getAttribute('z-model')
+      let show = el.getAttribute('z-if')
+      const klass = el.getAttribute('z-class')
+      const attrs = el.getAttributeNames()
+      attrs.forEach(attr => {
+        if (attr.startsWith('z-') && !['z-model', 'z-if', 'z-class'].includes(attr)) {
+          const key = el.getAttribute(attr)
+          const lookUpKey = key.startsWith('!') ? key.slice(1) : key
+          const attrName = attr.slice(2)
+          const value = this.getValue(lookUpKey)
+          if (key.startsWith('!')) {
+            el.setAttribute(attrName, !value)
+          } else {
+            el.setAttribute(attrName, value)
+          }
+        }
+      })
+      if (show) {
+        // check if show has bang at start
+        const isNegated = show.startsWith('!')
+        if (isNegated) show = show.slice(1)
+        // if data[show] is truthy, display the element, else hide it
+        const value = this.getValue(show)
+        el.style.display = isNegated ? !value ? '' : 'none' : value ? '' : 'none'
+      }
+      if (model && this.data[model] !== undefined) {
+        if (updateOnly.length && !updateOnly.includes(model)) return
+        // if el is not an input, textarea or select, set innerHTML
+        if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName)) {
+          el.innerHTML = this.data[model]
+          return
+        }
+        el.value = this.data[model]
+      }
+      if (klass) {
+        const regex = /{{\s*(!?)([\w.]+)\s*}}/g
+        const classes = klass
+          .split(' ')
+          .map(c => c.trim())
+          .map(c => {
+            const [, , key] = regex.exec(c) || []
+            regex.lastIndex = 0
+            return key ? this.getValue(key) : c
+          })
+          .filter(c => c)
+        el.className = classes.join(' ')
+      }
+    })
+  }
+}

@@ -1,1 +1,20 @@
-function registerServiceWorker(){"serviceWorker"in navigator&&"localhost"!==window.location.hostname&&"127.0.0.1"!==window.location.hostname&&window.addEventListener("load",function(){navigator.serviceWorker.register("service-worker.js").then(function(e){}).catch(function(e){console.error(":(")})})}registerServiceWorker();
+// Register serviceworker
+function registerServiceWorker () {
+  if ('serviceWorker' in navigator) {
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      // Never register service worker on localhost
+      return
+    }
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function (_registration) {
+          // Serviceworker registered successfully
+        })
+        .catch(function (_error) {
+          // Failed to register serviceworker
+          console.error(':(')
+        })
+    })
+  }
+}
+registerServiceWorker()

@@ -1,11 +1,649 @@
-let setCursor=(e,a)=>{var t=document.createRange(),n=window.getSelection();t.setStart(e,a),t.collapse(!0),n.removeAllRanges(),n.addRange(t)},audioContext=new(window.AudioContext||window.webkitAudioContext),getLS=()=>{var e=window.localStorage.getItem("writerAppData"),{soundOn:a,themeName:t,zenOn:n,ignoredWords:d}=JSON.parse(window.localStorage.getItem("writerAppSettings"))||{};return{savedData:e,soundOn:a,themeName:t,zenOn:n,ignoredWords:d}},app=new Zero("app",{data:{wordCount:0,content:getLS().savedData||"Start writing...",sfx:"music_off",soundOn:getLS().soundOn||!1,soundStatus:"SFX OFF",theme:"dark_mode",themeName:getLS().themeName||"dark",zenMode:"self_improvement",zenOn:getLS().zenOn||!1,zenStatus:"Zen Mode OFF",lock:"lock_open_right",lockdesc:"Encryption OFF",isEncrypted:!1,ignoredWords:getLS().ignoredWords||"",timerIsRunning:!1,writeTimer:0,wordGoal:"",lastWordCount:0,fileSystemAccessAPISupported:"showOpenFilePicker"in window},preload:async d=>{d.file=new File(d);var e={keys:Array.from({length:9},(e,a)=>("0"+(a+1)).slice(-2)).map(e=>"key-"+e),special:["backspace","return","return-2","space-2","space","alert-long","alert-short"]},a=[...e.keys,...e.special],e=(d.data.soundsMap=e,d.data.sounds=await Promise.all(a.map(async e=>{var a;return a=`assets/${e}.mp3`,a=await(await fetch(a)).arrayBuffer(),{name:e,audio:await audioContext.decodeAudioData(a)}})),d.soundName=t=>{let a=e=>{var a={" ":"space-2",Enter:"return",Load:"return-2",Backspace:"backspace",alert1:"alert-short",alert2:"alert-long"};if(a[t.key])return a[t.key];if(/^[a-zA-Z0-9]$/.test(t.key)){var a=t.key.toLowerCase().charCodeAt(0)-97;if(0<=a&&a<26)return a=a%d.data.soundsMap.keys.length,d.data.soundsMap.keys[a];if(/^[0-9]$/.test(t.key))return a=(parseInt(t.key,10)-1)%d.data.soundsMap.keys.length,d.data.soundsMap.keys[a]}return t.key.startsWith("Arrow")||["Shift","Control","Alt","Meta"].includes(t.key)?null:"space"};var e,n;a()&&(e=d.data.sounds.find(e=>e.name===a()))&&((n=audioContext.createBufferSource()).buffer=e.audio,n.connect(audioContext.destination),n.start(0))},d.timer=setInterval(()=>{d.element.querySelectorAll("[z\\:tick]").forEach(e=>{e.dispatchEvent(new CustomEvent("tick"))})},1e3),d.data.sfx=d.data.soundOn?"music_note":"music_off",d.data.theme="dark"===d.data.themeName?"dark_mode":"light_mode",d.data.zenMode=d.data.zenOn?"local_pizza":"self_improvement",d.data.soundStatus=d.data.soundOn?"SFX ON":"SFX OFF",d.data.zenStatus=d.data.zenOn?"Zen Mode ON":"Zen Mode OFF",d.data.wordCount=d.methods.countWords(d.data.content),document.getElementById("content"));Array.from(e.children).forEach(e=>{e.classList.remove("dimmed")}),d.updateDom(),d.methods.setContentFont(),"Start writing..."===d.data.content.trim()&&d.methods.info()},methods:{setContentFont:()=>{var e=document.getElementById("content");app.data.isEncrypted=app.methods.textIsEncrypted(),app.updateDom(["isEncrypted"]),app.data.isEncrypted?e.classList.add("encrypted"):e.classList.remove("encrypted")},countWords:e=>{var a=document.createElement("div");return a.innerHTML=e,a.innerHTML.replace(/<[^>]+>/g," ").replace(/&nbsp;/g," ").replace(/\s+/g," ").trim().split(" ").filter(e=>0<e.length).length},saveSettings:()=>{window.localStorage.setItem("writerAppSettings",JSON.stringify({soundOn:app.data.soundOn,themeName:app.data.themeName,zenOn:app.data.zenOn,ignoredWords:app.data.ignoredWords}))},newDraft:async()=>{app.data.content="Start writing...",app.data.wordCount=0,await app.methods.saveWriterData(),app.methods.closeModal(),app.updateDom(),app.methods.setContentFont(),app.file.close()},"{{theme}}":()=>{"dark"===app.data.themeName?(app.data.theme="light_mode",app.data.themeName="light"):(app.data.theme="dark_mode",app.data.themeName="dark"),app.methods.saveSettings(),app.updateDom(["themeName"])},"{{sfx}}":()=>{app.data.soundOn=!app.data.soundOn,app.data.sfx=app.data.soundOn?"music_note":"music_off",app.data.soundStatus=app.data.soundOn?"SFX ON":"SFX OFF",app.updateDom(["soundOn","{{sfx}}","soundStatus"]),app.data.soundOn&&app.soundName({key:"Load"}),app.methods.saveSettings()},"{{zenMode}}":()=>{var e;app.data.zenOn=!app.data.zenOn,app.data.zenMode=app.data.zenOn?"local_pizza":"self_improvement",app.data.zenStatus=app.data.zenOn?"Zen Mode ON":"Zen Mode OFF",app.updateDom(["zenOn","{{zenMode}}","zenStatus"]),app.data.zenOn||((e=document.getElementById("content")).classList.remove("dimmed"),Array.from(e.getElementsByClassName("focus")).forEach(e=>{e.classList.remove("focus")})),app.methods.saveSettings()},closeModal:()=>{app.data.modal.visible=!1,app.updateDom()},article:()=>{app.data.modal={visible:!0,title:"New Draft",message:"Start a new draft? All changes will be lost.",buttons:{primary:{text:"Cancel",action:"closeModal"},warning:{text:"New Draft",action:"newDraft"}}},app.bindEvents(),app.updateDom()},save:async()=>{await app.file.write()},upload_file:async()=>{await app.file.open()},info:()=>{app.data.modal={visible:!0,title:"About Writeros",message:document.getElementById("infoData").innerHTML,buttons:{secondary:{text:"Close",action:"closeModal"},primary:{text:"Buy me a coffee",action:"coffee"}}},app.bindEvents(),app.updateDom()},coffee:()=>{window.open("https://buymeacoffee.com/zerodragon","_blank")},createSound:e=>{app.data.soundOn&&(app.data.lastKeyTime||(app.data.lastKeyTime=0),app.data.lastKeyTime+200>(new Date).getTime()&&app.data.lastKey===e.key||(app.soundName(e),app.data.lastKeyTime=(new Date).getTime(),app.data.lastKey=e.key))},saveWriterData:async()=>{window.localStorage.setItem("writerAppData",await app.methods.encryptText())},tryAutoSave:async()=>{app.data.saveTimeout&&clearTimeout(app.data.saveTimeout),app.data.saveTimeout=setTimeout(async()=>{await app.methods.saveWriterData(),app.data.savingStatus="saving",app.updateDom(["savingStatus"]),setTimeout(()=>{app.data.savingStatus="",app.updateDom(["savingStatus"])},500),delete app.data.saveTimeout},1e3)},updateContent:e=>{var a;e.target.firstChild&&e.target.firstChild.nodeType===Node.TEXT_NODE&&((a=document.createElement("div")).textContent=e.target.firstChild.textContent,e.target.replaceChild(a,e.target.firstChild),setCursor(a,1)),app.data.content!==e.target.innerHTML&&(app.data.content=e.target.innerHTML,app.methods.tryAutoSave(),app.data.wordCount=app.methods.countWords(app.data.content),app.data.wordCount!==app.data.lastWordCount&&(app.data.wordGoal&&app.data.wordCount===app.data.wordGoal-1&&app.soundName({key:"alert1"}),app.data.lastWordCount=app.data.wordCount),app.data.writing="writing",app.data.expandedSidebar="",app.data.hiddenSidebar="hiddenSidebar",app.updateDom(["wordCount","writing","expandedSidebar","hiddenSidebar"]),app.methods.tryZenMode(e))},getSelectionParent:(e=!1)=>{let a=null,t=document.getElementById("content");var n=window.getSelection();return 0<n.rangeCount&&(n=n.getRangeAt(0),a=n.startContainer.parentElement),e?a===t?null:a:a===t?()=>{}:e=>{a.style.textAlign=e,setCursor(a.firstChild,a.firstChild.length),app.data.content=t.innerHTML,app.methods.saveWriterData()}},format_align_left:()=>{app.methods.getSelectionParent()("left")},format_align_center:()=>{app.methods.getSelectionParent()("center")},format_align_right:()=>{app.methods.getSelectionParent()("right")},format_align_justify:()=>{app.methods.getSelectionParent()("justify")},format_text:e=>{var a=app.methods.getSelectionParent(!0);a&&((e=document.createElement(e)).innerHTML=a.innerHTML,a.replaceWith(e),setCursor(e.firstChild,e.firstChild.length),a=document.getElementById("content"),app.data.content=a.innerHTML,app.methods.saveWriterData())},format_h1:()=>{app.methods.format_text("h1")},format_h2:()=>{app.methods.format_text("h2")},format_paragraph:()=>{app.methods.format_text("div")},tryZenMode:a=>{if("Start writing..."===app.data.content.trim()&&(app.data.content="",app.updateDom(["wordCount","content"])),app.data.zenOn){var t=document.getElementById("content"),n=window.getSelection();if(n.rangeCount){let e=n.getRangeAt(0).startContainer;for(;e&&!["DIV","H1","H2"].includes(e.tagName);)e=e.parentNode;for(;e&&e!==a.target&&(e.nodeType!==Node.ELEMENT_NODE||!["DIV","H1","H2"].includes(e.tagName));)e=e.parentNode;e&&e!==t&&""!==e.innerText.trim()&&(t.classList.add("dimmed"),e.classList.add("skip"),t.querySelectorAll(".focus:not(.skip)").forEach(e=>{e.classList.remove("focus")}),e.classList.contains("focus")||e.classList.add("focus"),e.classList.remove("skip"))}}},transformTime:e=>{let[a,t,n]=[0,0,0];return n=e%60,60<=(t=Math.floor(e/60))&&(a=Math.floor(t/60),t%=60),{hh:a,mm:t,ss:n}},incrementTimeLeft:e=>{app.data.writeTimer+=30,app.data.timerIsRunning=!0,app.methods.updateTimeGoal()},updateTimeGoal:e=>{var{hh:a,mm:t,ss:n}=app.methods.transformTime(app.data.writeTimer),a=[a,t,n].map(e=>("00"+e).slice(-2)).join(":");app.data.timeGoal="","00:00:00"!==a&&(app.data.timeGoal=a),app.updateDom(["timeGoal"])},startEditingTimeGoal:e=>{app.data.timerIsRunning=!1},setTimeGoal:n=>{app.data.timerIsRunning=!0;n=n.target.value;if(/^((\d{1,2}):)?((\d{1,2}):)?(\d{1,2})$/.exec(n)){let[e,a,t]=[0,0,0];var d,d=(3===(d=n.split(":")).length?[e,a,t]=d.map(e=>parseInt(e,10)||0):2===d.length?[a,t]=d.map(e=>parseInt(e,10)||0):t=parseInt(n,10)||0,3600*e+60*a+t);app.data.writeTimer=d}else app.data.writeTimer=0,app.data.timerIsRunning=!1;app.methods.updateTimeGoal()},tickTimeGoal:e=>{app.data.timerIsRunning&&(--app.data.writeTimer,app.methods.updateTimeGoal(),app.data.writeTimer=Math.max(0,app.data.writeTimer),5===app.data.writeTimer&&app.soundName({key:"alert2"}),0===app.data.writeTimer)&&(app.data.timerIsRunning=!1,app.updateDom(["timerIsRunning"]))},resetTimeGoal:e=>{app.data.writeTimer=0,app.data.timerIsRunning=!1,app.methods.updateTimeGoal(),app.updateDom(["timerIsRunning"])},setWordGoal:e=>{var a=e.target.value,a=parseInt(a,10);isNaN(a)||a<0?(app.data.wordGoal="",e.target.value=""):app.data.wordGoal=a},"{{lock}}":()=>{var e=document.getElementById("encryptInputs").cloneNode(!0),[e,a]=(app.data.modal={visible:!0,title:"Encryption",message:e,buttons:{secondary:{text:"Cancel",action:"closeModal"},primary:{text:"Set Encryption",action:"setLock"}}},app.bindEvents(),app.updateDom(),["encryptionKey","encryptionSecret"].map(e=>app.data.modal.message.querySelector(`.modal-content input[name="${e}"]`)));e.value=app.data.encryption?.key||"",a.value=app.data.encryption?.secret||""},textIsEncrypted:()=>{var e=app.data.content.replace(/<[^>]+>/g,"");return/^[0-9a-fA-F]+$/.test(e)&&e.length%32==0},encryptText:async()=>(app.data.content=app.data.content.replace(/ class="[^"]*"/g,""),!app.methods.textIsEncrypted()&&app.data.encryption?.key&&app.data.encryption?.secret?encryptText(app.data.content,app.data.encryption.key,app.data.encryption.secret):app.data.content),decryptText:()=>{var e=app.data.content.replace(/<[^>]+>/g,"");return decryptText(e,app.data.encryption.key,app.data.encryption.secret)},setLock:async()=>{var[e,a]=["encryptionKey","encryptionSecret"].map(e=>app.data.modal.message.querySelector(`.modal-content input[name="${e}"]`)),t=app.data.modal.message.querySelector('.modal-content input[name="decryptOnCloseModal"]').checked,n=app.data.modal.message.querySelector(".modal-content .error-message");if(n.style.display="none",app.data.encryption={key:e.value,secret:a.value},app.data.lock="lock",app.data.lockdesc="Encryption ON",e.value&&a.value||(app.data.lock="lock_open_right",app.data.lockdesc="Encryption OFF",await app.methods.saveWriterData()),t){let a=!1;if(app.data.content=await app.methods.decryptText().catch(e=>(a=!0,app.data.content)),a)return void(n.style.display="block");app.methods.setContentFont(),app.data.wordCount=app.methods.countWords(app.data.content)}await app.methods.saveWriterData(),app.methods.closeModal(),app.updateDom(["content","wordCount","{{lock}}"])},analytics:()=>{app.data.expandedSidebar=app.data.expandedSidebar?"":"expandedSidebar",app.data.expandedSidebar&&app.methods.runAnalytics(),app.updateDom(["expandedSidebar"])},updateIgnoredWords:e=>{e=e.target.value;app.data.ignoredWords=e.replace(/[\n,]+/g," ").split(/\s+/).map(e=>e.toLowerCase()).filter(Boolean),app.methods.runAnalytics(),app.methods.saveSettings(),app.updateDom(["ignoredWords"])},runAnalytics:async()=>{let t=document.getElementById("content").innerText.split(/\s+/).filter(Boolean),a={},p=(t.forEach(e=>{e=e.toLowerCase();a[e]=(a[e]||0)+1}),document.createElement("table"));var e=document.createElement("tr");e.innerHTML=`
+/* global Zero, File Node, encryptText, decryptText */
+const setCursor = (element, position) => {
+  const newRange = document.createRange()
+  const sel = window.getSelection()
+  newRange.setStart(element, position)
+  newRange.collapse(true)
+  sel.removeAllRanges()
+  sel.addRange(newRange)
+}
+const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+// get saved data from localStorage
+const getLS = () => {
+  const savedData = window.localStorage.getItem('writerAppData')
+  const { soundOn, themeName, zenOn, ignoredWords } = JSON.parse(
+    window.localStorage.getItem('writerAppSettings')
+  ) || {}
+  return { savedData, soundOn, themeName, zenOn, ignoredWords }
+}
+const app = new Zero('app', {
+  data: {
+    wordCount: 0,
+    content: getLS().savedData || 'Start writing...',
+    sfx: 'music_off',
+    soundOn: getLS().soundOn || false,
+    soundStatus: 'SFX OFF',
+    theme: 'dark_mode',
+    themeName: getLS().themeName || 'dark',
+    zenMode: 'self_improvement',
+    zenOn: getLS().zenOn || false,
+    zenStatus: 'Zen Mode OFF',
+    lock: 'lock_open_right',
+    lockdesc: 'Encryption OFF',
+    isEncrypted: false,
+    ignoredWords: getLS().ignoredWords || '',
+    timerIsRunning: false,
+    writeTimer: 0,
+    wordGoal: '',
+    lastWordCount: 0,
+    fileSystemAccessAPISupported: 'showOpenFilePicker' in window
+  },
+  preload: async (instance) => {
+    instance.file = new File(instance)
+    async function loadSound (url) {
+      const response = await fetch(url)
+      const arrayBuffer = await response.arrayBuffer()
+      const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+      return audioBuffer
+    }
+    // preload all mp3 from assets/sounds
+    const keys = Array.from({ length: 9 }, (_, i) => `0${i + 1}`.slice(-2))
+    const sounds = {
+      keys: keys.map(num => `key-${num}`),
+      special: [
+        'backspace',
+        'return',
+        'return-2',
+        'space-2',
+        'space',
+        'alert-long',
+        'alert-short'
+      ]
+    }
+    const allSounds = [...sounds.keys, ...sounds.special]
+    instance.data.soundsMap = sounds
+    instance.data.sounds = await Promise.all(allSounds.map(async sound => {
+      const audio = await loadSound(`assets/${sound}.mp3`)
+      return { name: sound, audio }
+    }))
+    instance.soundName = e => {
+      const getSound = _ => {
+        const specials = {
+          ' ': 'space-2',
+          Enter: 'return',
+          Load: 'return-2',
+          Backspace: 'backspace',
+          alert1: 'alert-short',
+          alert2: 'alert-long'
+        }
+        if (specials[e.key]) return specials[e.key]
+        if (/^[a-zA-Z0-9]$/.test(e.key)) {
+          const index = e.key.toLowerCase().charCodeAt(0) - 97
+          if (index >= 0 && index < 26) {
+            const soundIndex = index % instance.data.soundsMap.keys.length
+            return instance.data.soundsMap.keys[soundIndex]
+          }
+          if (/^[0-9]$/.test(e.key)) {
+            const num = parseInt(e.key, 10)
+            const soundIndex = (num - 1) % instance.data.soundsMap.keys.length
+            return instance.data.soundsMap.keys[soundIndex]
+          }
+        }
+        if (e.key.startsWith('Arrow') || ['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return null
+        return 'space'
+      }
+      if (getSound()) {
+        const sound = instance.data.sounds.find(s => s.name === getSound())
+        if (sound) {
+          const source = audioContext.createBufferSource()
+          source.buffer = sound.audio
+          source.connect(audioContext.destination)
+          source.start(0)
+        }
+      }
+    }
+    instance.timer = setInterval(() => {
+      // dispatch a 'tick' event only for elements that has z:tick attribute
+      instance.element.querySelectorAll('[z\\:tick]').forEach(el => {
+        el.dispatchEvent(new CustomEvent('tick'))
+      })
+    }, 1000)
+    instance.data.sfx = instance.data.soundOn ? 'music_note' : 'music_off'
+    instance.data.theme = instance.data.themeName === 'dark' ? 'dark_mode' : 'light_mode'
+    instance.data.zenMode = instance.data.zenOn ? 'local_pizza' : 'self_improvement'
+    instance.data.soundStatus = instance.data.soundOn ? 'SFX ON' : 'SFX OFF'
+    instance.data.zenStatus = instance.data.zenOn ? 'Zen Mode ON' : 'Zen Mode OFF'
+    // get words from html content
+    instance.data.wordCount = instance.methods.countWords(instance.data.content)
+    const contentEl = document.getElementById('content')
+    Array.from(contentEl.children).forEach(child => {
+      child.classList.remove('dimmed')
+    })
+    instance.updateDom()
+    instance.methods.setContentFont()
+    if (instance.data.content.trim() !== 'Start writing...') return
+    instance.methods.info()
+  },
+  methods: {
+    setContentFont: () => {
+      const contentEl = document.getElementById('content')
+      app.data.isEncrypted = app.methods.textIsEncrypted()
+      app.updateDom(['isEncrypted'])
+      if (app.data.isEncrypted) {
+        // add class encrypted to contentEl
+        contentEl.classList.add('encrypted')
+      } else {
+        contentEl.classList.remove('encrypted')
+      }
+    },
+    countWords: (rawHtml) => {
+      const tmp = document.createElement('div')
+      tmp.innerHTML = rawHtml
+      const textContent = tmp.innerHTML
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/&nbsp;/g, ' ')
+        .replace(/\s+/g, ' ').trim()
+      return textContent.split(' ').filter(word => word.length > 0).length
+    },
+    saveSettings: () => {
+      window.localStorage.setItem('writerAppSettings', JSON.stringify({
+        soundOn: app.data.soundOn,
+        themeName: app.data.themeName,
+        zenOn: app.data.zenOn,
+        ignoredWords: app.data.ignoredWords
+      }))
+    },
+    newDraft: async () => {
+      app.data.content = 'Start writing...'
+      app.data.wordCount = 0
+      await app.methods.saveWriterData()
+      app.methods.closeModal()
+      app.updateDom()
+      app.methods.setContentFont()
+      app.file.close()
+    },
+    '{{theme}}': () => {
+      if (app.data.themeName === 'dark') {
+        app.data.theme = 'light_mode'
+        app.data.themeName = 'light'
+      } else {
+        app.data.theme = 'dark_mode'
+        app.data.themeName = 'dark'
+      }
+      app.methods.saveSettings()
+      app.updateDom(['themeName'])
+    },
+    '{{sfx}}': () => {
+      app.data.soundOn = !app.data.soundOn
+      app.data.sfx = app.data.soundOn ? 'music_note' : 'music_off'
+      app.data.soundStatus = app.data.soundOn ? 'SFX ON' : 'SFX OFF'
+      app.updateDom(['soundOn', '{{sfx}}', 'soundStatus'])
+      if (app.data.soundOn) app.soundName({ key: 'Load' })
+      app.methods.saveSettings()
+    },
+    '{{zenMode}}': () => {
+      app.data.zenOn = !app.data.zenOn
+      app.data.zenMode = app.data.zenOn ? 'local_pizza' : 'self_improvement'
+      app.data.zenStatus = app.data.zenOn ? 'Zen Mode ON' : 'Zen Mode OFF'
+      app.updateDom(['zenOn', '{{zenMode}}', 'zenStatus'])
+      if (!app.data.zenOn) {
+        // remove dimmed class from all children
+        const contentEl = document.getElementById('content')
+        contentEl.classList.remove('dimmed')
+        Array.from(contentEl.getElementsByClassName('focus')).forEach(child => {
+          child.classList.remove('focus')
+        })
+      }
+      app.methods.saveSettings()
+    },
+    closeModal: () => {
+      app.data.modal.visible = false
+      app.updateDom()
+    },
+    article: () => {
+      app.data.modal = {
+        visible: true,
+        title: 'New Draft',
+        message: 'Start a new draft? All changes will be lost.',
+        buttons: {
+          primary: { text: 'Cancel', action: 'closeModal' },
+          warning: { text: 'New Draft', action: 'newDraft' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+    },
+    save: async () => {
+      await app.file.write()
+    },
+    upload_file: async () => {
+      await app.file.open()
+    },
+    info: () => {
+      app.data.modal = {
+        visible: true,
+        title: 'About Writeros',
+        message: document.getElementById('infoData').innerHTML,
+        buttons: {
+          secondary: { text: 'Close', action: 'closeModal' },
+          primary: { text: 'Buy me a coffee', action: 'coffee' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+    },
+    coffee: () => {
+      window.open('https://buymeacoffee.com/zerodragon', '_blank')
+    },
+    createSound: (e) => {
+      // use a sound from soundsMap based on key pressed
+      if (app.data.soundOn) {
+        if (!app.data.lastKeyTime) app.data.lastKeyTime = 0
+        if (app.data.lastKeyTime + 200 > new Date().getTime() && app.data.lastKey === e.key) return
+        app.soundName(e)
+        app.data.lastKeyTime = new Date().getTime()
+        app.data.lastKey = e.key
+      }
+    },
+    saveWriterData: async () => {
+      window.localStorage.setItem('writerAppData', await app.methods.encryptText())
+    },
+    tryAutoSave: async () => {
+      // throtle to save only if user stopped typing for 1 second
+      if (app.data.saveTimeout) {
+        clearTimeout(app.data.saveTimeout)
+      }
+      app.data.saveTimeout = setTimeout(async () => {
+        await app.methods.saveWriterData()
+        app.data.savingStatus = 'saving'
+        app.updateDom(['savingStatus'])
+        setTimeout(() => {
+          app.data.savingStatus = ''
+          app.updateDom(['savingStatus'])
+        }, 500)
+        delete app.data.saveTimeout
+      }, 1000)
+    },
+    updateContent: (e) => {
+      app.methods.tryZenMode(e)
+      if (e.key.startsWith('Arrow') || ['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return
+      // if firstchild is plain text node, wrap it in a div
+      if (e.target.firstChild && e.target.firstChild.nodeType === Node.TEXT_NODE) {
+        const div = document.createElement('div')
+        div.textContent = e.target.firstChild.textContent
+        e.target.replaceChild(div, e.target.firstChild)
+        // set cursor to end of div
+        setCursor(div, 1)
+      }
+      if (app.data.content === e.target.innerHTML) return
+      app.data.content = e.target.innerHTML
+      app.methods.tryAutoSave()
+      app.data.wordCount = app.methods.countWords(app.data.content)
+      if (app.data.wordCount !== app.data.lastWordCount) {
+        if (app.data.wordGoal && app.data.wordCount === app.data.wordGoal - 1) {
+          app.soundName({ key: 'alert1' })
+        }
+        app.data.lastWordCount = app.data.wordCount
+      }
+      app.data.writing = 'writing'
+      app.data.expandedSidebar = ''
+      app.data.hiddenSidebar = 'hiddenSidebar'
+      app.updateDom(['wordCount', 'writing', 'expandedSidebar', 'hiddenSidebar'])
+    },
+    getSelectionParent: (returnParent = false) => {
+      let parentElement = null
+      const contentEl = document.getElementById('content')
+      const selection = window.getSelection()
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0)
+        parentElement = range.startContainer.parentElement
+      }
+      if (returnParent) {
+        if (parentElement === contentEl) return null
+        return parentElement
+      }
+      if (parentElement === contentEl) return () => {}
+      return (align) => {
+        parentElement.style.textAlign = align
+        setCursor(parentElement.firstChild, parentElement.firstChild.length)
+        app.data.content = contentEl.innerHTML
+        app.methods.saveWriterData()
+      }
+    },
+    format_align_left: () => {
+      app.methods.getSelectionParent()('left')
+    },
+    format_align_center: () => {
+      app.methods.getSelectionParent()('center')
+    },
+    format_align_right: () => {
+      app.methods.getSelectionParent()('right')
+    },
+    format_align_justify: () => {
+      app.methods.getSelectionParent()('justify')
+    },
+    format_text: (node) => {
+      const parent = app.methods.getSelectionParent(true)
+      if (!parent) return
+      const newElement = document.createElement(node)
+      newElement.innerHTML = parent.innerHTML
+      parent.replaceWith(newElement)
+      setCursor(newElement.firstChild, newElement.firstChild.length)
+      const contentEl = document.getElementById('content')
+      app.data.content = contentEl.innerHTML
+      app.methods.saveWriterData()
+    },
+    format_h1: () => {
+      app.methods.format_text('h1')
+    },
+    format_h2: () => {
+      app.methods.format_text('h2')
+    },
+    format_paragraph: () => {
+      app.methods.format_text('div')
+    },
+    tryZenMode: (e) => {
+      if (app.data.content.trim() === 'Start writing...') {
+        app.data.content = ''
+        app.updateDom(['wordCount', 'content'])
+      }
+      if (!app.data.zenOn) return
+      const contentEl = document.getElementById('content')
+      // get current innerDiv where the cursor is
+      const selection = window.getSelection()
+      if (!selection.rangeCount) return
+      const range = selection.getRangeAt(0)
+      let currentNode = range.startContainer
+      // sometimes the currentNode is a text node, so we need to traverse up to the parent div/h1/h2
+      while (currentNode && !['DIV', 'H1', 'H2'].includes(currentNode.tagName)) {
+        currentNode = currentNode.parentNode
+      }
+      while (currentNode && currentNode !== e.target) {
+        if (currentNode.nodeType === Node.ELEMENT_NODE && ['DIV', 'H1', 'H2'].includes(currentNode.tagName)) break
+        currentNode = currentNode.parentNode
+      }
+      if (!currentNode || currentNode === contentEl) return
+      // dim all other elements inside e.target
+      if (currentNode.innerText.trim() === '') return
+      contentEl.classList.add('dimmed')
+      currentNode.classList.add('skip')
+      contentEl.querySelectorAll('.focus:not(.skip)').forEach(el => {
+        el.classList.remove('focus')
+      })
+      if (!currentNode.classList.contains('focus')) {
+        currentNode.classList.add('focus')
+      }
+      currentNode.classList.remove('skip')
+    },
+    transformTime: (seconds) => {
+      let [hh, mm, ss] = [0, 0, 0]
+      mm = Math.floor(seconds / 60)
+      ss = seconds % 60
+      if (mm >= 60) {
+        hh = Math.floor(mm / 60)
+        mm = mm % 60
+      }
+      return { hh, mm, ss }
+    },
+    incrementTimeLeft: _ => {
+      app.data.writeTimer += 30
+      app.data.timerIsRunning = true
+      app.methods.updateTimeGoal()
+    },
+    updateTimeGoal: _ => {
+      const { hh, mm, ss } = app.methods.transformTime(app.data.writeTimer)
+      const formattedTime = [hh, mm, ss]
+        .map(unit => `00${unit}`.slice(-2))
+        .join(':')
+      app.data.timeGoal = ''
+      if (formattedTime !== '00:00:00') app.data.timeGoal = formattedTime
+      app.updateDom(['timeGoal'])
+    },
+    startEditingTimeGoal: _ => {
+      app.data.timerIsRunning = false
+    },
+    setTimeGoal: (e) => {
+      app.data.timerIsRunning = true
+      const value = e.target.value
+      // value must be in format [[H]H:][[M]M:][[S]S]
+      const regex = /^((\d{1,2}):)?((\d{1,2}):)?(\d{1,2})$/
+      const match = regex.exec(value)
+      if (!match) {
+        app.data.writeTimer = 0
+        app.data.timerIsRunning = false
+        app.methods.updateTimeGoal()
+        return
+      }
+      let [hh, mm, ss] = [0, 0, 0]
+      const valueArr = value.split(':')
+      if (valueArr.length === 3) {
+        [hh, mm, ss] = valueArr.map(v => parseInt(v, 10) || 0)
+      } else if (valueArr.length === 2) {
+        [mm, ss] = valueArr.map(v => parseInt(v, 10) || 0)
+      } else {
+        ss = parseInt(value, 10) || 0
+      }
+      const totalSeconds = hh * 3600 + mm * 60 + ss
+      app.data.writeTimer = totalSeconds
+      app.methods.updateTimeGoal()
+    },
+    tickTimeGoal: _e => {
+      if (app.data.timerIsRunning) {
+        app.data.writeTimer -= 1
+        app.methods.updateTimeGoal()
+        app.data.writeTimer = Math.max(0, app.data.writeTimer)
+        if (app.data.writeTimer === 5) {
+          app.soundName({ key: 'alert2' })
+        }
+        if (app.data.writeTimer === 0) {
+          app.data.timerIsRunning = false
+          app.updateDom(['timerIsRunning'])
+        }
+      }
+    },
+    resetTimeGoal: _ => {
+      app.data.writeTimer = 0
+      app.data.timerIsRunning = false
+      app.methods.updateTimeGoal()
+      app.updateDom(['timerIsRunning'])
+    },
+    setWordGoal: (e) => {
+      const value = e.target.value
+      const num = parseInt(value, 10)
+      if (isNaN(num) || num < 0) {
+        app.data.wordGoal = ''
+        e.target.value = ''
+      } else {
+        app.data.wordGoal = num
+      }
+    },
+    '{{lock}}': () => {
+      const encryptDiv = document.getElementById('encryptInputs').cloneNode(true)
+      app.data.modal = {
+        visible: true,
+        title: 'Encryption',
+        message: encryptDiv,
+        buttons: {
+          secondary: { text: 'Cancel', action: 'closeModal' },
+          primary: { text: 'Set Encryption', action: 'setLock' }
+        }
+      }
+      app.bindEvents()
+      app.updateDom()
+      const [encryptionKey, encryptionSecret] = ['encryptionKey', 'encryptionSecret']
+        .map(name => app.data.modal.message.querySelector(`.modal-content input[name="${name}"]`))
+      encryptionKey.value = app.data.encryption?.key || ''
+      encryptionSecret.value = app.data.encryption?.secret || ''
+    },
+    textIsEncrypted: () => {
+      const txt = app.data.content.replace(/<[^>]+>/g, '')
+      return (/^[0-9a-fA-F]+$/.test(txt) && txt.length % 32 === 0)
+    },
+    encryptText: async () => {
+      // clean app.data.content from any class attributes
+      app.data.content = app.data.content.replace(/ class="[^"]*"/g, '')
+      // is text is already encrypted, return as is (encrypted text is hex only one word)
+      if (app.methods.textIsEncrypted()) return app.data.content
+      if (!app.data.encryption?.key || !app.data.encryption?.secret) return app.data.content
+      return encryptText(
+        app.data.content,
+        app.data.encryption.key,
+        app.data.encryption.secret
+      )
+    },
+    decryptText: () => {
+      const txt = app.data.content.replace(/<[^>]+>/g, '')
+      return decryptText(
+        txt,
+        app.data.encryption.key,
+        app.data.encryption.secret
+      )
+    },
+    setLock: async () => {
+      const [encryptionKey, encryptionSecret] = ['encryptionKey', 'encryptionSecret']
+        .map(name => app.data.modal.message.querySelector(`.modal-content input[name="${name}"]`))
+      const decryptOnCloseModal = app.data.modal.message.querySelector('.modal-content input[name="decryptOnCloseModal"]').checked
+      const errorEl = app.data.modal.message.querySelector('.modal-content .error-message')
+      errorEl.style.display = 'none'
+      app.data.encryption = {
+        key: encryptionKey.value,
+        secret: encryptionSecret.value
+      }
+      app.data.lock = 'lock'
+      app.data.lockdesc = 'Encryption ON'
+      if (!encryptionKey.value || !encryptionSecret.value) {
+        app.data.lock = 'lock_open_right'
+        app.data.lockdesc = 'Encryption OFF'
+        await app.methods.saveWriterData()
+      }
+      if (decryptOnCloseModal) {
+        let errorFound = false
+        app.data.content = await app.methods.decryptText().catch(e => {
+          errorFound = true
+          return app.data.content
+        })
+        if (errorFound) {
+          errorEl.style.display = 'block'
+          return
+        }
+        app.methods.setContentFont()
+        app.data.wordCount = app.methods.countWords(app.data.content)
+      }
+      await app.methods.saveWriterData()
+      app.methods.closeModal()
+      app.updateDom(['content', 'wordCount', '{{lock}}'])
+    },
+    analytics: () => {
+      app.data.expandedSidebar = app.data.expandedSidebar ? '' : 'expandedSidebar'
+      if (app.data.expandedSidebar) app.methods.runAnalytics()
+      app.updateDom(['expandedSidebar'])
+    },
+    updateIgnoredWords: (e) => {
+      const value = e.target.value
+      app.data.ignoredWords = value
+        .replace(/[\n,]+/g, ' ')
+        .split(/\s+/)
+        .map(word => word.toLowerCase())
+        .filter(Boolean)
+      app.methods.runAnalytics()
+      app.methods.saveSettings()
+      app.updateDom(['ignoredWords'])
+    },
+    runAnalytics: async () => {
+      const contentEl = document.getElementById('content')
+      const words = contentEl.innerText.split(/\s+/).filter(Boolean)
+      const frequency = {}
+      words.forEach(word => {
+        const lowerWord = word.toLowerCase()
+        frequency[lowerWord] = (frequency[lowerWord] || 0) + 1
+      })
+      const table = document.createElement('table')
+      const header = document.createElement('tr')
+      header.innerHTML = `
         <th></th>
         <th>Word</th>
         <th>Count</th>
         <th>Freq</th>
-      `,p.appendChild(e),Object.entries(a).filter(([e])=>!app.data.ignoredWords?.includes(e)).sort((e,a)=>a[1]-e[1]).map(([e,a])=>({word:e,count:a,percent:(a/t.length*100).toFixed(2)})).slice(0,20).forEach(({word:e,count:a,percent:t},n)=>{var d=document.createElement("tr");d.innerHTML=`
-            <td>${n+1}</td>
-            <td>${e}</td>
-            <td>${a}</td>
-            <td>${t}%</td>
-          `,p.appendChild(d)}),app.data.analytics=p.outerHTML,app.data.lectureTime=(app.data.wordCount/130).toFixed(1)+" minutes",await app.updateDom(["analytics","lectureTime"]),document.querySelectorAll("#analytics table tr").forEach(a=>{a.addEventListener("click",()=>{var e=a.children[1].innerText;app.data.ignoredWords.includes(e)||(app.data.ignoredWords.push(e),app.methods.updateIgnoredWords({target:{value:app.data.ignoredWords.join("\n")}}))})})}}});document.addEventListener("keyup",e=>{"Escape"===e.key&&app.data.modal?.visible&&app.methods.closeModal()}),document.addEventListener("keydown",e=>{(e.ctrlKey||e.metaKey)&&"s"===e.key.toLowerCase()&&(e.preventDefault(),app.methods.save())}),document.addEventListener("dragover",e=>{e.preventDefault(),e.dataTransfer.items&&"file"===e.dataTransfer.items[0].kind?(e.dataTransfer.dropEffect="copy",document.getElementById("dragOverlay").classList.add("active")):e.dataTransfer.dropEffect="none"}),document.addEventListener("dragleave",e=>{e.preventDefault(),e.relatedTarget&&"HTML"!==e.relatedTarget.nodeName||document.getElementById("dragOverlay").classList.remove("active")}),document.addEventListener("drop",e=>{e.preventDefault(),app.file.openDragged(e),document.getElementById("dragOverlay").classList.remove("active")}),document.addEventListener("mousemove",e=>{app.data.writing&&(delete app.data.writing,delete app.data.hiddenSidebar,app.updateDom(["writing","hiddenSidebar"]))});
+      `
+      table.appendChild(header)
+      Object.entries(frequency)
+        .filter(([word]) => !app.data.ignoredWords?.includes(word))
+        .sort((a, b) => b[1] - a[1])
+        .map(([word, count]) => {
+          const percent = ((count / words.length) * 100).toFixed(2)
+          return { word, count, percent }
+        })
+        .slice(0, 20)
+        .forEach(({ word, count, percent }, i) => {
+          // create a table row DOM for each word
+          const row = document.createElement('tr')
+          row.innerHTML = `
+            <td>${i + 1}</td>
+            <td>${word}</td>
+            <td>${count}</td>
+            <td>${percent}%</td>
+          `
+          table.appendChild(row)
+        })
+      app.data.analytics = table.outerHTML
+      app.data.lectureTime = (app.data.wordCount / 130).toFixed(1) + ' minutes'
+      await app.updateDom(['analytics', 'lectureTime']) // await to ensure DOM is updated
+      const trs = document.querySelectorAll('#analytics table tr')
+      trs.forEach((tr) => {
+        tr.addEventListener('click', () => {
+          const word = tr.children[1].innerText
+          // add word to ignoredWords
+          if (!app.data.ignoredWords.includes(word)) {
+            app.data.ignoredWords.push(word)
+            app.methods.updateIgnoredWords({
+              target: {
+                value: app.data.ignoredWords.join('\n')
+              }
+            })
+          }
+        })
+      })
+    }
+  }
+})
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Escape' && app.data.modal?.visible) {
+    app.methods.closeModal()
+  }
+})
+document.addEventListener('keydown', (e) => {
+  // if user press ctrl/cmd + s, prevent default and save
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+    e.preventDefault()
+    app.methods.save()
+  }
+})
+// enable drag and drop file upload
+document.addEventListener('dragover', (e) => {
+  e.preventDefault()
+  // apply only if dragging a file
+  if (e.dataTransfer.items && e.dataTransfer.items[0].kind === 'file') {
+    e.dataTransfer.dropEffect = 'copy'
+  } else {
+    e.dataTransfer.dropEffect = 'none'
+    return
+  }
+  document.getElementById('dragOverlay').classList.add('active')
+})
+document.addEventListener('dragleave', (e) => {
+  e.preventDefault()
+  if (!e.relatedTarget || e.relatedTarget.nodeName === 'HTML') {
+    document.getElementById('dragOverlay').classList.remove('active')
+  }
+})
+document.addEventListener('drop', (e) => {
+  e.preventDefault()
+  app.file.openDragged(e)
+  document.getElementById('dragOverlay').classList.remove('active')
+})
+document.addEventListener('mousemove', (e) => {
+  if (!app.data.writing) return
+  delete app.data.writing
+  delete app.data.hiddenSidebar
+  app.updateDom(['writing', 'hiddenSidebar'])
+})
