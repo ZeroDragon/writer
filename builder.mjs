@@ -61,7 +61,7 @@ const copyJS = file => {
     .replace(/{{CACHE_NAME}}/g, `${process.env.AppName}-cache-v${packageJSON.version}`)
   const result = UglifyJS.minify(rawFile)
   if (result.error) throw result.error
-  fs.writeFileSync(files[1], result.code)
+  fs.writeFileSync(files[1], rawFile)
 }
 
 const copyAssets = () => {

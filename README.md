@@ -5,6 +5,9 @@ A simple write space without distractions or assistants
 ## To Do
 
 ## Done
+- Add gradient background
+- Fix shift and arrow keys in app, they should not trigger actions
+- Fix repeated inputs should trigger actions
 - Auto hide unused stats on footer
 - Fix a problem when selecting no-item transforms the whole content editable
 - Disable sounds on non-typewriter classic keys

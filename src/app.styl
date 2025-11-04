@@ -10,7 +10,7 @@ body
 
 .theme.light
   // --background: #fdf6e3
-  --background: #e8ebf3
+  --background: #d6ddef
   --foreground: #1f2939
   --app-background: #e8ebf3
   --darker-background: #0000000F
@@ -19,6 +19,8 @@ body
   --secondary: #545454
   --warning: #ff6b6b
   --buttonForeground: #ffffff
+  --grad1: var(--background)
+  --grad2: var(--app-background)
 
 .theme.dark
   --background: #10151d
@@ -30,12 +32,14 @@ body
   --secondary: #353535
   --warning: #ff4c4c
   --buttonForeground: #ffffff
+  --grad1: var(--app-background)
+  --grad2: var(--background)
 
 .theme
   font-size: 16px
-  background-color: var(--app-background)
+  background: linear-gradient(to bottom, var(--grad1), var(--grad2))
   color: var(--foreground)
-  transition: background-color 0.3s ease, color 0.3s ease
+  transition: background 0.3s ease, color 0.3s ease
 
 .app
   min-height: 100vh

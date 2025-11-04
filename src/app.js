@@ -265,6 +265,8 @@ const app = new Zero('app', {
       }, 1000)
     },
     updateContent: (e) => {
+      app.methods.tryZenMode(e)
+      if (e.key.startsWith('Arrow') || ['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) return
       // if firstchild is plain text node, wrap it in a div
       if (e.target.firstChild && e.target.firstChild.nodeType === Node.TEXT_NODE) {
         const div = document.createElement('div')
@@ -287,7 +289,6 @@ const app = new Zero('app', {
       app.data.expandedSidebar = ''
       app.data.hiddenSidebar = 'hiddenSidebar'
       app.updateDom(['wordCount', 'writing', 'expandedSidebar', 'hiddenSidebar'])
-      app.methods.tryZenMode(e)
     },
     getSelectionParent: (returnParent = false) => {
       let parentElement = null
