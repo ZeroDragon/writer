@@ -1,5 +1,5 @@
 /* global self, caches, fetch */
-const CACHE_NAME = 'Writeros-cache-v1.0.15'
+const CACHE_NAME = 'Writeros-cache-v1.0.16'
 const urlsToCache = [
   // app items
   'app.css',
