@@ -53,9 +53,9 @@ body
   padding: 0
   transition: grid-template-columns 0.3s ease-in-out
   &.hiddenSidebar
-    grid-template-columns: 1fr 0px
+    // grid-template-columns: 1fr 0px
     .sidebar
-      overflow: hidden
+      opacity: 0
   &.expandedSidebar
     grid-template-columns: 1fr 250px
     .analyticsDisplay
@@ -167,8 +167,6 @@ a
   caret-color: var(--accent)
   scroll-behavior: smooth
   max-height: calc(80vh)
-  max-width: 2000px
-  margin: 0 auto
   &::selection
     background: var(--accent)
     color: var(--buttonForeground)
@@ -404,7 +402,11 @@ textarea
     border: 2px dashed var(--foreground)
     border-radius: 16px
 
-/* responsive: stack on small screens */
 @media (max-width: 768px)
   .content
     padding: 20px
+
+@media (min-width: 2100px)
+  .content
+    width: 2000px
+    margin: 0 auto
