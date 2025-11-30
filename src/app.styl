@@ -167,6 +167,8 @@ a
   caret-color: var(--accent)
   scroll-behavior: smooth
   max-height: calc(80vh)
+  max-width: 2000px
+  margin: 0 auto
   &::selection
     background: var(--accent)
     color: var(--buttonForeground)
@@ -187,7 +189,7 @@ a
     max-height: calc(100vh - 40px)
     &:before
       content: ""
-      position: absolute
+      position: fixed
       top: 0
       left: 0
       width: 100%
@@ -195,6 +197,7 @@ a
       background-color: var(--background)
       opacity: 0.7
       z-index: 5
+      max-width: calc(100% - 40px)
     &:after
       font-family: "Material Icons Outlined"
       content: "lock"
